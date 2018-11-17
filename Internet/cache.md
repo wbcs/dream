@@ -1,3 +1,13 @@
+# 什么是缓存？
+浏览器通常会将常用的资源缓存在个人电脑的`disk`和`memory`。
+
+> 比如Chrome的缓存就存储在`C:\Users\42176\AppData\Local\Google\Chrome\User Data\Default\`下。
+
+## 浏览器请求静态资源的流程
+![img](http://s1.51cto.com/wyfs02/M01/07/9C/wKiom1nMdhqgZsSgAAFnSCviIho631.png-wh_651x-s_816497540.png)
+
+> 事实上，在实际应用中通常采用静态服务器(`CND`).
+
 # 缓存的分类
 
 按照缓存的位置分类可以分为：
@@ -8,11 +18,11 @@
 按照失效策略分类：
 + Cache-Control
 + ETag
-+ Max-age
++ Expires
 
-> http协议头的那些字段都属于disk cache
+> `http`协议头的那些字段都属于`disk cache`，而且讨论的所有缓存资源问题都是只针对`GET`请求，对于其他`POST、DELETE，PUT`等通常不做任何话缓存。
 
-# cache的优先级
+## cache的优先级
 分别是（由高到低，由上到下）：
 + service cache
 + memory cache
@@ -41,6 +51,52 @@
 当命中缓存之后，浏览器会从硬盘中读取资源，虽然速度比起`memory cache`慢了
 一点，但相比网络请求还是快了很多的。我们平时所说的缓存大部分都是`disk cache`。
 凡是存储都会面临容量增长的问题，`disk cache`也不例外。在`browser`自动清理的时候，会依据相应的算法对**最可能过时**的资源进行清理，因此是**一个一个**删除的。不过每个`browser`使用的算法不尽相同，这也是他们差异性的一个体现。
+
+
+
+### cache-control和Expires
++ Cache-Control是HTTP1.1中新增的响应头
++ Expires是HTTP1.0中的响应头
++ Cache-Control使用的是相对时间，秒数。
++ Expires指定的是具体的过期日期而不是秒数。因为Server和Client存在时钟不一致的情况，所以最好使用Cache-Control
++ Cache-Control的优先级高于Expires
+
+> `Cache-Control`和`Expires`都是强缓存，`from disk cache` ，状态码是`200`.
+
+#### cache-control的取值
++ max-age(s)：指定缓存最大的有效时间，定义的是时间长短。浏览器在max-age这段时间内不会向服务器发送请求了。
++ public：指定相应可以在代理缓存中北缓存，可被多用户共享。
++ private(默认)：只能在私有缓存中被缓存，不能放在代理上。一些用户敏感信息通常要设置为private。
++ no-cache：发送请求时必须先和Server确认资源是否被更改过(根据`ETag`和`If-None-Match`)，然后再决定是否使用本地缓存。
++ no-store：绝对的禁止缓存，包括memory cache。
+
+![](http://s4.51cto.com/wyfs02/M02/07/9C/wKiom1nMdhuDOqwpAADsvFzqevA82.jpeg)
+
+> 如果浏览器或者代理缓存中的资源过期了，不意味着它和Server上的资源有差异，仅仅意味着到了要核对的时间了。这种情况成为`服务器在验证`。
+
+### ETag和If-None-Match
+它们是HTTP1.1新增头部。`Etag`是指根据实体内容生成一段`hash`字符串，标识资源的状态，由服务端产生。浏览器会将这串字符串写入`If-None-Match`传回服务器，验证资源是否已经修改。
+
+![](http://s1.51cto.com/wyfs02/M00/07/9C/wKiom1nMdhugQGOLAAB3ONxu1AE924.png)
+
+#### 如何计算ETag
+计算`ETag`的值的方法有很多，可以直接用时间戳(这样就和`Last-Modified`没两样了)。
+
+`ETag`值可以是唯一标识资源的任何东西，如持久化存储中的某个资源关联的版本、一个或者多个文件属性，实体头信息和校验值、(CheckSum)，也可以计算实体信息的散列值。
+
+有时候，为了计算一个`ETag`值可能有比较大的代价，此时可以采用生成唯一值等方式(如常见的`GUID`)。
+`Apache`默认通过`FileEtag`中`FileEtag INode Mtime Size`的配置自动生成`ETag`(当然也可以通过用户自定义的方式)。
+由于`Etag`由服务器构造，所以在集群环境中一定要保证`Etag`的**唯一性**
+
+> 个人理解，ETag里面就是存储文件当前内容的标识，如果内容没有改变这个标识就不会变，反之亦然。
+
+### Last-Modified与If-Modified-Since
+它们是HTTP1.0中的头部。两个内容都是日期。
+
+#### 两种验证机制的比较
+头部|If-Modified-Since与Last-Modified|If-None-Match与Etag
+-|-|-
+区别|时间到了，但是文件内容没变。或者内容变了时间没到。导致不必要的数据请求。以及周期性重写文件，但是内容实质上没变，最后修改时间变了也会产生新的数据请求|如果生成规则没有选好，可能文件的某些不重要的部分改变了，不需要所有的缓存都更新，也会造成不必要的数据请求。(这个缺点两种机制都有)
 
 ## service worker
 上述的缓存策略以及缓存/读取/失效的动作都是由浏览器内部判断 & 进行的，我们只能设置响应头的某些字段来告诉浏览器，而不能自己操作。但`service worker`的出现，给予了我们另外一种更加灵活、直接的操作方式。它和`disk cache`一样，都是永久性缓存。
