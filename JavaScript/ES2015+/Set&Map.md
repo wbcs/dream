@@ -65,7 +65,7 @@ arr.forEach(functino(value, value, set) {
 `Weak Set`是一种特殊的`Set`，它与一般的`Set`的不同之处在于:
 + 1. `Weak Set`只能接收**非原始值**作为它的元素。
 + 2. `Weak Set`**不可迭代**
-+ 3. `Weak Set`**不支持**`size、forEach、ckear`等属性，**只有**`add、has、delete`。
++ 3. `Weak Set`**不支持**`size、forEach、clear`等属性，**只有**`add、has、delete`。
 + 4. `Weak Set`中保存的对象是**弱引用**。
 
 > 其中最后一项最为重要，这意味着Weak Set中保存的对象不在JavaScript引擎的GC考虑之中。
