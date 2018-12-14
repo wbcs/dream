@@ -5,7 +5,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js/,
+  entry: './src/index.js/',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
@@ -72,7 +72,7 @@ app.listen(3000, () => console.log('over'));
 ```
 
 ## HMR(Hot Module Replacement)
-webpack自带的也有热更新，不过每次修改文件的时候页面会完全刷新，而HMR可以做到部分更新。
+`webpack`自带的也有热更新，不过每次修改文件的时候页面会完全刷新，而HMR可以做到部分更新。
 ```javascript
 const webpack = require('webpack');
 
