@@ -24,6 +24,7 @@ module.exports = {
 
 # 将style中的css分离为单独的css文件
 按照之前的做法，我们写的`css`都会被弄到`style`标签中，如果需要把它们提取到一个单独的文件中，又该怎么做呢？
+
 ![](https://user-gold-cdn.xitu.io/2018/12/20/167cb3605ea459a6?w=606&h=562&f=png&s=104408)
 ```javascript
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -42,13 +43,14 @@ const module = {
 
 const plugins = [
   new MiniCssExtractPlugin({
-    filename: '[name].[hash].css',
+    filename: 'path/[name].[hash].css', // path是相对于dist之下而言的
   })
 ];
 ```
 > 答案就是使用`MiniCssExtractPlugin.loader`代替`style-loader`，然后在`plugins`中`new`一个`MiniCssExtractPlugin`的实例，传递对应的参数即可。
 
 不过这样还有一个问题，就是分离出来的css文件并没有被压缩，依然保留之前的缩进、注释等等。
+
 ![](https://user-gold-cdn.xitu.io/2018/12/20/167cb34e2cee36aa?w=580&h=325&f=png&s=42151)
 
 # 压缩分离出来的css文件
@@ -65,6 +67,7 @@ const config = {
 };
 ```
 可以看到压缩以后的效果：
+
 ![](https://user-gold-cdn.xitu.io/2018/12/20/167cb34300da5378?w=1119&h=89&f=png&s=35165)
 
 # 使用css预编译
@@ -93,6 +96,24 @@ const config = {
 
 ## less、sass
 只用把`stylus-loader`换成`less-loader`、`sass-loader`即可。
+
+# 添加CSS3前缀
+需要下载两个东东：
++ postcss-loader
++ autoprefixer
+
+然后需要在根目录下创建一个`postcss.config.js`文件，内容如下：
+```javascript
+module.exports = {
+  plugins: [require('autoprefixer')]
+};
+```
+最后一步，在`webpack.config.js`在`use`使用到的`loader`中，在`css-loader`之前(直接前驱，注意这里是数组之后，因为`loader`的执行顺序是从后向前，我这里的说的之前指的是执行顺序的顺序).
+```javascript
+{
+  use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'stylus-loader']
+}
+```
 
 # 结语
 实现相同功能的`plugin`不止这一个，但是现在就知道这个，如果以后发现更好的，会即使更新。

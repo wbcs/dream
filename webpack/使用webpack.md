@@ -133,3 +133,18 @@ module.exports = {
 };
 ```
 再加上它就ok了。
+
+# 方便的resolve
+```javascript
+module.exports = {
+  ...,
+  resolve: {
+    // 给常用的目录起个别名，这样在引入的时候就会方便清晰许多
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+    // 在import没有后缀路径的时候按照以下顺序依次加载文件，十分便利
+    extensions: ['js', 'jsx', 'css', 'styl'],
+  },
+};
+```
