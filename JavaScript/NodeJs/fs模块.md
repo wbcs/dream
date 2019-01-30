@@ -72,8 +72,7 @@ rs
   .on('data', chunk => console.log(chunk))
   .on('error', () => console.log(err));
   .on('end', () => console.log('没有数据了'))
-  .on('close', () => console.log('read stream已关闭'))
-
+  .on('close', () => console.log('read stream已关闭'));
 ```
 
 # 写入/创建文件
@@ -141,12 +140,15 @@ fs.watchFile(
 ```
 > 原理就是轮询, 可以用`fs.unwatchFile(filepath)`移出。
 
-```javascript
-fs.watch(
-  filepath,
-  {
-    interval: 1000, // 多长时间检查一次
-  },
-  (now, prev) => {}
-);
+
+# 追加内容
+```js
+const fs = require('fs');
+
+fs.appendFile(file, data [,optinos], cb);
+// optinos = {
+  encodeing: '',
+  mode: '0o666'(默认),
+  flag: 'a',
+};
 ```
