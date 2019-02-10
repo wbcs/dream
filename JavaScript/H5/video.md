@@ -14,8 +14,8 @@
   
 >
   <!-- 用source来置顶多个文件，为浏览器提供可支持的编码格式 -->
-  <source src="" type=""></source>
-  <source src="" type=""></source>
+  <source src="" type="" />
+  <source src="" type="" />
   浏览器不支持video时显示
 </video>
 ```
