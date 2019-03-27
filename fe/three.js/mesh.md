@@ -83,3 +83,32 @@ cube.translateZ(4);
 
 # 结束
 关于网格的一些基础东西暂时就写到这，以后学到新的再来补充👍。
+
+附带一个常用的转动物体的代码：
+```js
+handleMouseMove(e) {
+  this.changeCamera(
+    this.scene.getObjectByName('cube'),
+    { x: e.pageX, y: e.pageY },
+    this.position
+  );
+}
+  rotate(obj, pos, prevPos) {
+    const {scene, camera, renderer} = this;
+    const x = pos.x - prevPos.x;
+    const y = pos.y - prevPos.y;
+    if (x > 0) {
+      obj.rotation.y += 0.01;
+    } else if (x < 0) {
+      obj.rotation.y -= 0.01;
+    }
+    if (y > 0 && obj.rotation.x <= Math.PI / 2) {
+      obj.rotation.x += 0.01;
+    } else if (y < 0 && obj.rotation.x >= -Math.PI / 2) {
+      obj.rotation.x -= 0.01;
+    }
+    prevPos.x = pos.x;
+    prevPos.y = pos.y;
+    renderer.render(scene, camera);
+  }
+```
