@@ -32,7 +32,7 @@ class LNode {
   }
 }
 
-class List {
+class LinkList {
   constructor(list) {
     this.head = new LNode(0);
     list.forEach(node => {
@@ -97,5 +97,54 @@ class List {
 
 ## 双向链表
 ```js
+class DLNode {
+  constructor(data) {
+    this.data = data;
+    this.prev = this.next = this;
+  }
+}
 
+class DoubleLinkList {
+  constructor(list) {
+    this.head = new DLNode(0);
+    list.forEach((item, index) => {
+      this.insert(index, item);
+    });
+  }
+  insert(index, data) {
+    // index大于length，则append到最后
+    if (index < 0) return false;
+    const node = new DLNode(data);
+    let p = this.head.next;
+    for (let i = 0; i < index && p !== this.head; i ++) {
+      p = p.next;
+    }
+    node.next = p;
+    node.prev = p.prev;
+    p.prev.next = node;
+    p.prev = node;
+    this.head.data ++;
+    return true;
+  }
+  remove(index) {
+    if (index >= this.head.data || index < 0) return false;
+    let p = this.head.next;
+    for (let i = 0; i < index; i ++) {
+      p = p.next;
+    }
+    p.prev.next = p.next;
+    p.next.prev = p.prev;
+    this.head.data --;
+    return true;
+  }
+  toString() {
+    let p = this.head.next;
+    let str = '';
+    while (p !== this.head) {
+      str += p.data + '->';
+      p = p.next;
+    }
+    return str;
+  }
+}
 ```
