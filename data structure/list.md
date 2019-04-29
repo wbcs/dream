@@ -23,6 +23,7 @@ function merge(listA, listB) {
 ```
 
 # 链式存储
+## 单链表
 ```js
 class LNode {
   constructor(data) {
@@ -47,6 +48,20 @@ class List {
     p.next = node;
     this.head.data ++;
   }
+  insert(index, data) {
+    let p = this.head;
+    for (let i = index - 1; i >= 0 && p; i --) {
+      p = p.next;
+    }
+    if (!p) {
+      this.append(data);
+    } else {
+      const node = new LNode(data);
+      node.next = p.next;
+      p.next = node;
+    }
+    this.head.data ++;
+  }
   removeAt(index) {
     if (index < 0 || index >= this.head.data) return false;
     let counter = 0;
@@ -56,6 +71,7 @@ class List {
     }
     if (!p) return false;
     p.next = p.next.next;
+    this.head.data --;
     return true;
   }
   indexOf(data) {
@@ -71,16 +87,15 @@ class List {
     let str = '';
     let p = this.head.next;
     while (p) {
-      str += p.data.toString() + (p.next ? '=>' : '');
+      str += p.data.toString() + (p.next ? '->' : '');
       p = p.next;
     }
     return str;
   }
 }
+```
 
-const l = new List([0, 50, 20, 80]);
-console.log(l.toString());
-l.removeAt(1);
-console.log(l.toString());
+## 双向链表
+```js
 
 ```
