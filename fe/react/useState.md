@@ -67,7 +67,7 @@ function mountIndeterminateComponent(
 # 具体过程
 `Fiber`结点中的`memoizedState`属性存储了上一次`render`计算出来的`state`，在类组件中这个`memoizedState`可以和`state`一一对应，但是在函数组件中（使用`hooks`）就不是了。
 
-因为`React`不知道在一个函数组件中调用了几次`setState`，所有`React`把一个`hooks`对象存储在`memoizedState`中来保存函数组件的`state`。
+因为`React`不知道在一个函数组件中调用了几次`setState`，所以`React`把一个`hooks`对象存储在`memoizedState`中来保存函数组件的`state`。
 
 `hooks`对象如下：
 ```js
@@ -295,3 +295,29 @@ function basicStateReducer<S>(state: S, action: BasicStateAction<S>): S {
 1.  当我们第一次调用`[count, setCount] = useState(0)`的时候，会创建一个`queue`。
 2.  调用`mount`阶段返回的`setCount`时，会将新`state`存储在`queue`对应`update`的`action`中，然后触发一个更新请求。
 3.  `React`在触发更新的时候，重新执行函数组件。就会再次执行`useState`，这个时候的`useState`和之前的`mountState`不同，是`updateState`。它会遍历`hook`对象的`queue`，得到最终新的`state。`并保存在`hook.momizedState`中，返回新值和新的触发器。
+
+
+# 总结
+我们来捋一遍：
+
+函数组件的`state`是一整个对象，存储在`Fiber`结点的`memoizedState`中。
+
+函数组件的`state`是分散开的（一个`useState`就可以看做一个`state`），`React`是通过链表的形式，把这多个`state`组合在一起,**第一个结点**也是存放在`Fiber`结点的`memoizedState`中。
+> 记住`Fiber.memoizedState`存储的是第一个`useState`对应的`hook`对象哦。
+
+`React`是通过下面的方式来保存函数组件的状态的：
++ 每个`useState()`看做是一个`hook`对象
++ 第一个`useState()`的`hook`对象就是`Fiber.memoizedState`
++ 接着后面的`useState()`尾插至`next`属性
++ 每个`state`都有自己的更新（`setCount`,不止一个哦），这些都保留在`hook`对象的`queue`属性中
+  + 这个queue是一个循环链表，它的`action`属性存储着每次`setCount`传进来的参数，也就是要更新的值
+
+解决了`state`的存储问题，接下来就是更新了：
++ 每次调用`setCount`就会创建一个新`update`对象，更新的值存储在`action`中。然后将`update`放在`queue.last`中。最后请求更新。
++ `React`来决定什么时候触发更新。触发更新的时候会重新执行函数组件。
++ 重新执行`Function Component`时, `React`会根据`Fiber`结点中的`memoizedState`中保存的各个属性判断出是更新操作，`useState`就会执行更新逻辑：遍历当前`hook`对象的`queue`，取到每个`update`对象的`action`（调用`setCount`的时候已经把新的值存储在这儿了），拿到所有`setCount`中的最后一次的值。
++ 这个值就是最终应该更新的值，把它保存到`hook`对象的`memoizedState`属性中，`return [hook.memoizedState, dispatch];`
+
+至此整个过程结束。之后的流程同上。
+
+> 看完了这些，了了我之前的一个误区，我以前一直以为是在`setCount`更新完数据之后才触发`rerender`。现在才发现，其实`setCount`只是把要更新的新值存储起来，真正修改`state`的逻辑是在`useState`的时候。而且`mount`的`useState`跟update的`useState`不是同一个函数。
