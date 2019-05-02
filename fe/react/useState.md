@@ -321,3 +321,13 @@ function basicStateReducer<S>(state: S, action: BasicStateAction<S>): S {
 至此整个过程结束。之后的流程同上。
 
 > 看完了这些，了了我之前的一个误区，我以前一直以为是在`setCount`更新完数据之后才触发`rerender`。现在才发现，其实`setCount`只是把要更新的新值存储起来，真正修改`state`的逻辑是在`useState`的时候。而且`mount`的`useState`跟update的`useState`不是同一个函数。
+
+## 为什么hooks只能在顶级作用域中调用?
+说的逼格有点高， 就是说不能在`if`或者循环中调用`useState`。
+
+因为`React`不知道调用了几次`useState`，每次调用就会在尾部添加一个`hook`对象。更新的时候会根据原先调用的顺序取出对应的`hook`对象。
+
+所以，如果`useState`在if中调用的话，有可能造成先后调用`useState`的数量不一致，这样取到的`hook`对象就和之前不对应了。
+
+## 为什么hooks只能在函数组件中使用？
+因为只有在函数组件才会调用`renderWidthHooks`函数，这个函数才会处理`hooks`的相关逻辑。
