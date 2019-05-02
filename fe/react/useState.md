@@ -300,7 +300,7 @@ function basicStateReducer<S>(state: S, action: BasicStateAction<S>): S {
 # 总结
 我们来捋一遍：
 
-函数组件的`state`是一整个对象，存储在`Fiber`结点的`memoizedState`中。
+类组件的`state`是一整个对象，存储在`Fiber`结点的`memoizedState`中。
 
 函数组件的`state`是分散开的（一个`useState`就可以看做一个`state`），`React`是通过链表的形式，把这多个`state`组合在一起,**第一个结点**也是存放在`Fiber`结点的`memoizedState`中。
 > 记住`Fiber.memoizedState`存储的是第一个`useState`对应的`hook`对象哦。
