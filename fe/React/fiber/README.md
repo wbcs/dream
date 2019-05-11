@@ -1,14 +1,14 @@
 # Fiber架构
-引入Fiber的原因是为了优化React的渲染问题：从setState起到渲染视图无法中断，一直占用main线程导致动画、用户交互等出现卡顿。而Fiber的引入就是为了解决这个问题。
+引入`Fiber`的原因是为了优化`React`的渲染问题：从`setState`起到渲染视图无法中断，一直占用`main`线程导致动画、用户交互等出现卡顿。而`Fiber`的引入就是为了解决这个问题。
 
-浏览器将GUI描绘、timer callback、event callback、js、request统统放在一起执行，只有执行完一件事之后才能执行下一件事。如果有多余的事件，浏览器会对js进行JIT、热代码优化，以及内部对reflow的一些优化。
+浏览器将`GUI描绘`、`timer callback`、`event callback`、`js`、`request`统统放在一起执行，只有执行完一件事之后才能执行下一件事。如果有多余的事件，浏览器会对`js`进行`JIT`、热代码优化，以及内部对`reflow`的一些优化。
 
 简单理解就是，让浏览器休息好才能跑得快。
 
 # 如何让代码断开重连？
-以前React的执行都是原子操作，如何让浏览器休息呢？
+以前`React`的执行都是原子操作，如何让浏览器休息呢？
 
-React的jsx：组件化、标签化。
+`React`的`jsx`：组件化、标签化。
 ```html
 <section>
   <header></header>
@@ -16,30 +16,30 @@ React的jsx：组件化、标签化。
   <footer></footer>
 </section>
 ```
-我们都知道jsx最后被babel编译为：`React.createElement(type, {props}, children)`, 而jsx又是嵌套的，势必会产生递归的代码，所以React16之前的调度器称为栈调度。那他就没办法被暂停重启，也就无法让代码断开重连。而且函数的递归还需要保存上下文、执行、pop等等。
+我们都知道`jsx`最后被`babel`编译为：`React.createElement(type, {props}, children)`, 而`jsx`又是嵌套的，势必会产生递归的代码，所以`React16`之前的调度器称为栈调度。那他就没办法被暂停重启，也就无法让代码断开重连。而且函数的递归还需要保存上下文、执行、`pop`等等。
 
-而链表不需要保存上下文、push、pop等，性能要比递归好得多，所以React采用了链表。
+而链表不需要保存上下文、`push`、`pop`等，性能要比递归好得多，所以`React`采用了链表。
 
-React是个构建用户视图的框架，它内部有三层架构：
-+ 虚拟DOM层：仅仅描述js对象和真实DOM的结构
-+ 组件层：组件更新、ReactDOM.render、setState等。
+`React`是个构建用户视图的框架，它内部有三层架构：
++ 虚拟DOM层：仅仅描述`js`对象和真实DOM的结构
++ 组件层：组件更新、`ReactDOM.render`、`setState`等。
 + 渲染层：又具体的宿主环境将虚拟DOM渲染为真实的视图。
 
 1、3都无从下手，只能改变组件层了。
 
-Fiber的结点有:
+`Fiber`的结点有:
 + return: 父节点
 + subling: 右兄弟结点
-+ child: 第一个children
++ child: 第一个`children`
 > 通过这三个属性就能够将一颗树转换为链表了
 
 # 确定更新的数量
-React16之前都是从root或者setState的组件开始更新整个树，开发者能做的，只有在shouldComponentUpdate进行一些优化，避免一些无用的比较。
+`React16`之前都是从`root`或者`setState`的组件开始更新整个树，开发者能做的，只有在`shouldComponentUpdate`进行一些优化，避免一些无用的比较。
 
-而React16将虚拟DOM转换为fiber，fiber再转换为DOM。
+而`React16`将虚拟`DOM`转换为`fiber`，`fiber`再转换为`DOM`。
 
 ## 分片的原理
-我们简答实现以下ReactDOM.render的过程，其中主要看fiber的分片思想。
+我们简答实现以下`ReactDOM.render`的过程，其中主要看`fiber`的分片思想。
 ```js
 const queue = [];
 ReactDOM.render = function(root, container) {
@@ -108,9 +108,9 @@ function updateFiberAndView() {
   }
 }
 ```
-所以分片的思想就是对root进行DFS，如果有时间把每个VNode都转换为对应的fiber并更新组件或元素，更新的过程是原子的，所以需要再次检查时间，如果时间不够就push到queue中，break出loop，给浏览器50mm去干别的事，完了继续这个过程。
+所以分片的思想就是对`root`进行`DFS`，如果有时间把每个`VNode`都转换为对应的`fiber`并更新组件或元素，更新的过程是原子的，所以需要再次检查时间，如果时间不够就`push`到`queue`中，`break`出`loop`，给浏览器`50mm`去干别的事，完了继续这个过程。
 
-而updateComponentOrElement大概就是：
+而`updateComponentOrElement`大概就是：
 ```js
 function updateComponentOrElement(fiber){
   const {type, stateNode, props} = fiber
@@ -145,16 +145,16 @@ function updateComponentOrElement(fiber){
 这我也看不太懂，可能是原作者没写完吧。。。以后再说
 
 # 调度确保流畅
-上面的updateFiberAndView我们给了它100mm，给了浏览器50mm。但是有可能updateFiberAndView用不了100mm，浏览器50mm又不够用，就会造成页面不流畅的问题。
+上面的`updateFiberAndView`我们给了它`100mm`，给了浏览器`50mm`。但是有可能`updateFiberAndView`用不了`100mm`，浏览器`50mm`又不够用，就会造成页面不流畅的问题。
 
 说起流畅，就想起一些API：
 + requestAnimationFrame
 + requestIdleCallback
 
-这些API 的调用时机都是由浏览器（系统）决定的，可以保证和刷新频率一致。React看上了requestIdleCallback的功能，但是兼容性的问题，它最终没有直接使用这个API，而是降介处理使用hack的requestAnimationFrame来模拟的。
+这些`API `的调用时机都是由浏览器（系统）决定的，可以保证和刷新频率一致。`React`看上了`requestIdleCallback`的功能，但是兼容性的问题，它最终没有直接使用这个`API`，而是降介处理使用`hack`的`requestAnimationFrame`来模拟的。
 ![](https://pic2.zhimg.com/v2-e1ba24e51c372e7c824bdf4df5a41555_r.jpg)
 
-使用它改写后的updateFiberAndView：
+使用它改写后的`updateFiberAndView`：
 ```js
 
 function updateFiberAndView(deadline) {
@@ -206,10 +206,10 @@ function updateFiberAndView(deadline) {
   }
 }
 ```
-OK, FIber分片的原理就是这些啦~\(≧▽≦)/~
+`OK`, `FIber`分片的原理就是这些啦~\(≧▽≦)/~
 
 # 总结
-这仅仅说了fiber的思想、分片原理，具体过程比这复杂的多，有能力会继续研究下去。
+这仅仅说了`fiber`的思想、分片原理，具体过程比这复杂的多，有能力会继续研究下去。
 
 参考（照抄）：就是把这篇文章变成了更易于自己理解的话，原文在这：
 
