@@ -1,6 +1,6 @@
 # 函数组件和类组件
 + 他们的区别是什么？
-+ React是如何区分他们的？
++ `React`是如何区分他们的？
 
 # 区别
 ## jsx写法
@@ -9,7 +9,7 @@
 <Greeting />
 ```
 ## React内部调用
-如果 `Greeting` 是 `Funtion Component`，则 `React` 会调用它：
+如果 `Greeting` 是 `Funtion Component`，只是在得到其虚拟`DOM`时会调用它，而且没有生命周期钩子（hooks不是生命周期）：
 ```js
 function Greeting() {
   return <p>Hello World!</p>;
@@ -18,7 +18,7 @@ function Greeting() {
 const result = Greetring(props);
 ```
 
-如果是 `Class Component`， 则 `React` 会先创建它的实例，然后调用 `render` 方法：
+如果是 `Class Component`， 则 `React` 会先创建它的实例，然后在相应的阶段，调用相应的生命周期的钩子函数，得到其具体的虚拟`DOM`是调用 `render` 方法：
 ```js
 class Greeting extends Component {
   render() {
@@ -27,6 +27,7 @@ class Greeting extends Component {
 }
 
 const ins = new Greetring(props);
+ins.props = props;
 const result = ins.render();
 ```
 ## ☝️很重要的🌰
@@ -124,6 +125,7 @@ FuncComp.prototype.isReactComponent;  // undefined
 总结一下 `Class Component` 和 `Function Component` 的区别：
 1. `React`内部调用不同：前者创建`instance`然后`instance.render()`；后者直接执行本身。
 2. `props`可变性不同：前者`props`会动态更新（更新的时候会改变`instance`的属性）；后者的`props`是一定不会改变的（因为每次执行都会有不同的作用域，而它们是独立的）。
+3.  类组件还有生命周期钩子。
 
 > 由于hooks的出现，有无状态已经不是函数组件跟类组件的区别了！
 

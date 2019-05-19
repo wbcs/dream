@@ -11,7 +11,11 @@ export function useState<S>(initialState: (() => S) | S) {
   return dispatcher.useState(initialState);
 }
 ```
-短短两行代码,其实 `useState` 就是 `ReactCurrentDispatcher.current.useState(initialState);`, 那这个东西又是什么呢？ `ReactCurrentDispatcher`其实跟 `setState`一样，具体的实现都没有在 `react` 包中，而是交由具体的平台代码来实现的，例如：`ReactDOM`、`RN`都有具体的实现，`react` 仅仅定义了他们的`API`。
+短短两行代码,其实 `useState` 就是 `ReactCurrentDispatcher.current.useState(initialState);`。
+
+那这个东西又是什么呢？
+
+ `ReactCurrentDispatcher`其实跟 `setState`一样，具体的实现都没有在 `react` 包中，而是交由具体的平台代码来实现的，例如：`ReactDOM`、`RN`都有具体的实现，`react` 仅仅定义了他们的`API`。
 
 > 所以，仅从`react`包中，只能知道，`useState`实际上是调用了具体平台的`useState`方法。
 
@@ -43,7 +47,7 @@ function mountIndeterminateComponent(
 第一次执行，得到渲染后的`VNode`并保存到`value`中，至于`VNode` 是如何映射为真正的`DOM`，这个不管。
 
 ## 更新
-更新的时候，会调用updateFunctionComponnet:
+更新的时候，会调用`updateFunctionComponnet`:
 ```js
   let nextChildren; // 这里就保存着更新后的VNode
   nextChildren = renderWithHooks(
@@ -65,9 +69,31 @@ function mountIndeterminateComponent(
 更新阶段就是得到更新后的`VNode`，保存在`nextChild`中。
 
 # 具体过程
-`Fiber`结点中的`memoizedState`属性存储了上一次`render`计算出来的`state`，在类组件中这个`memoizedState`可以和`state`一一对应，但是在函数组件中（使用`hooks`）就不是了。
+`Fiber`结点中的`memoizedState`属性存储了未更新时的`state`，在类组件中这个`memoizedState`可以和`state`一一对应，但是在函数组件中（使用`hooks`）就不是了。
 
-因为`React`不知道在一个函数组件中调用了几次`setState`，所以`React`把一个`hooks`对象存储在`memoizedState`中来保存函数组件的`state`。
+因为`React`不知道在一个函数组件中调用了几次`useState`，所以`React`把一个`hooks`对象存储在`memoizedState`中来保存函数组件的`state`。
+
+内部会进行简单的判断，useXX：
+```js
+let list;
+let counter = 0;
+let currentName = '';
+
+function useXX() {
+  currentName = 'useXX'
+  if (!list) {
+    list = [currentName]
+  } else {
+    list.push(currentName);
+  }
+  someCall();
+}
+
+function someCall() {
+  list[counter ++] === currentName
+}
+```
+> 大概就是这么个意思
 
 `hooks`对象如下：
 ```js
