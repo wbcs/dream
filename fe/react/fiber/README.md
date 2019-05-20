@@ -1,7 +1,7 @@
 # Fiber架构
 引入`Fiber`的原因是为了优化`React`的渲染问题：从`setState`起到渲染视图无法中断，一直占用`main`线程导致动画、用户交互等出现卡顿。而`Fiber`的引入就是为了解决这个问题。
 
-浏览器将`GUI描绘`、`timer callback`、`event callback`、`js`、`request`统统放在一起执行，只有执行完一件事之后才能执行下一件事。如果有多余的事件，浏览器会对`js`进行`JIT`、热代码优化，以及内部对`reflow`的一些优化。
+浏览器将`GUI描绘`、`timer callback`、`event callback`、`js`、`request`统统放在一起执行，只有执行完一件事之后才能执行下一件事。如果有多余的时间，浏览器会对`js`进行`JIT`、热代码优化，以及内部对`reflow`的一些优化。
 
 简单理解就是，让浏览器休息好才能跑得快。
 

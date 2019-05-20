@@ -242,7 +242,7 @@ function dispatchAction<S, A>(
     eagerState: null,
     next: null,
   };
-  // 重点：构建query
+  // 重点：构建queue
   // queue.last是最近的一次更新，然后last.next开始是每一次的action
   const last = queue.last;
   if (last === null) {
