@@ -5,20 +5,20 @@
  * 例如，如果输入长度为7的数组{2,3,1,0,2,5,3}，那么对应的输出是第一个重复的数字2。
  */
 
- function duplicate(numbers, duplication) {
-    // write code here
-    //这里要特别注意~找到任意重复的一个值并赋值到duplication[0]
-    //函数返回True/False
+function duplicate(numbers, duplication) {
+  // write code here
+  //这里要特别注意~找到任意重复的一个值并赋值到duplication[0]
+  //函数返回True/False
 
-    for(let i = 0; i < numbers.length; i ++) {
-      if(numbers.indexOf(numbers[i], i + 1) !== -1) {
-        duplication[0] = numbers[i];
-        return true;
-      }
+  for (let i = 0; i < numbers.length; i++) {
+    if (numbers.indexOf(numbers[i], i + 1) !== -1) {
+      duplication[0] = numbers[i];
+      return true;
     }
-    return false;
- }
+  }
+  return false;
+}
 
 const duplication = [];
-console.log(duplicate([1,2,3,4,2,4], duplication));
+console.log(duplicate([1, 2, 3, 4, 2, 4], duplication));
 console.log(duplication);
