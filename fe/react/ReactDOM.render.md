@@ -666,7 +666,7 @@ function commitPlacement(finishedWork) {
 }
 ```
 
-谢天谢地，老子终于到挂载DOM了。
+谢天谢地，老子终于到挂载`DOM`了。
 
 # 总结
 我们把大概的流程过一遍：
@@ -679,3 +679,12 @@ function commitPlacement(finishedWork) {
 7. 最终进入挂载阶段。把我们的根组件`append`到`container`之中
 
 至此，整个挂载过程已经完毕。
+
+## 彩蛋
+阅读过程中又对`React`的事件有了进一步的理解：
+
+触发的时候，事件类型已经`bind`到对应的`cb`之中了。等到具体事件被触发时，`React`会用`event.target`获取到对应的 `fiber` （是给`DOM`打`tag`，把对应的`fiber`直接帮到`fiber`来实现的）。
+
+根据`fiber`上存储的信息（`props`中就有对应的回调）和事件类型，选择对应的`event class`，再从`fiber`上取到信息存储到`React event`对象之中(`_dispatchInstances`, `_dispatchListeners`)。
+
+最后将所有的`listener`都执行即可实现事件委托。
