@@ -683,7 +683,7 @@ function commitPlacement(finishedWork) {
 ## 彩蛋
 阅读过程中又对`React`的事件有了进一步的理解：
 
-触发的时候，事件类型已经`bind`到对应的`cb`之中了。等到具体事件被触发时，`React`会用`event.target`获取到对应的 `fiber` （是给`DOM`打`tag`，把对应的`fiber`直接帮到`fiber`来实现的）。
+触发的时候，事件类型已经`bind`到对应的`cb`之中了。等到具体事件被触发时，`React`会用`event.target`获取到对应的 `fiber` （是给`DOM`打`tag`，把对应的`fiber`直接帮到`DOM`来实现的）。
 
 根据`fiber`上存储的信息（`props`中就有对应的回调）和事件类型，选择对应的`event class`，再从`fiber`上取到信息存储到`React event`对象之中(`_dispatchInstances`, `_dispatchListeners`)。
 
