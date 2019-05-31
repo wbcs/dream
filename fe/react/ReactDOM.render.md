@@ -683,8 +683,12 @@ function commitPlacement(finishedWork) {
 ## 彩蛋
 阅读过程中又对`React`的事件有了进一步的理解：
 
-触发的时候，事件类型已经`bind`到对应的`cb`之中了。等到具体事件被触发时，`React`会用`event.target`获取到对应的 `fiber` （是给`DOM`打`tag`，把对应的`fiber`直接帮到`DOM`来实现的）。
+触发的时候，事件类型已经`bind`到对应的`cb`之中了。等到具体事件被触发时，`React`会用`event.target`获取到对应的 `fiber` （是给`DOM`打`tag`，把对应的`fiber`直接绑到`DOM`来实现的）。这个过程中还会遍历取得target的祖先结点，一路判断其是否注册同类型事件回调，保存至queue中。
 
-根据`fiber`上存储的信息（`props`中就有对应的回调）和事件类型，选择对应的`event class`，再从`fiber`上取到信息存储到`React event`对象之中(`_dispatchInstances`, `_dispatchListeners`)。
+根据`fiber`上存储的信息（`props`中就有对应的回调，其实props也被绑到了DOM上  所以具体是应该是取的props 不过都一样啦）和事件类型，选择对应的`event class`，再从`fiber`上取到信息存储到`React event`对象之中(`_dispatchInstances`, `_dispatchListeners`)。
 
-最后将所有的`listener`都执行即可实现事件委托。
+最后将所有的`listener`都按照入队的顺序执行（也就是冒泡顺序）即可实现事件委托。
+
+这也解释了为什么`React`事件中通过`event.stopPropagation()`无法组织原生事件的冒泡：因为`event`是`React`自定义类的`ins`，它原型上的方法只能阻止`React`自定义事件。在还没有执行任何一个`React`事件回调之前（`React`进行一系列的事件合成、触发等等）原生事件早就冒泡/执行了，而且在执行`React`事件回调之前组件会被重新执行（如果子组件被`click`，父组件一定会更新 如果父组件在事件回调中又更新 `state` 那就会导致整个组件被更新`2`次）。
+
+这个时候就算使用`event.nativeEvent`对象的`stopPropagation`也没办法阻止。但是如果我们提前就绑定原生事件去阻止冒泡的话，那`React`绑定在`document`上的事件又没办法触发了，`React`事件就失效了。所以这其实是个挺费劲的事儿，正确的办法是提前绑定原生事件，
