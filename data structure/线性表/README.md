@@ -1,3 +1,62 @@
+# 链表的建立
+```js
+class List {
+  constructor(...args) {
+    this.data = args.length;  // 头结点的数据域保存链表元素个数
+    this.next = null;
+    let now = this;
+    for (let i = 0; i < args.length; i ++) {
+      now.next = {
+        data: args[i],
+        next: null
+      };
+      now = now.next;
+    }
+  }
+}
+
+```
+
+# 链表的逆置
+```js
+class List {
+  // 省略其他代码，下同
+  reverse() {
+    const header = this;
+    let r = header.next;  // r始终指向将要插入新链表的元素
+    header.next = null;
+    while(r) {
+      let p = r.next;
+      r.next = header.next;
+      header.next = r;
+      r = p;
+    }
+  }
+}
+```
+
+# 判断是否有环
+```js
+class List {
+  static haveCircle() {
+    let p, q;
+    p = q = this.next;
+    while(p && q) {
+      if (p === q) {
+        return true;
+      }
+      p = p.next;
+      if (q.next) {
+        q = q.next.next;
+      } else {
+        break;
+      }
+    }
+    return false;
+  };
+}
+```
+
 # 合并两个有序顺序表
 ```js
 const listA = [0, 2, 4, 7];
