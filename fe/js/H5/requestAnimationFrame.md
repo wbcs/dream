@@ -1,1 +1,2 @@
 # requestAnimationFrame
+传递给callback的参数是执行当前callback至打开页面的时间，单位是ms。

@@ -356,4 +356,10 @@ function basicStateReducer<S>(state: S, action: BasicStateAction<S>): S {
 所以，如果`useState`在if中调用的话，有可能造成先后调用`useState`的数量不一致，这样取到的`hook`对象就和之前不对应了。
 
 ## 为什么hooks只能在函数组件中使用？
-因为只有在函数组件才会调用`renderWidthHooks`函数，这个函数才会处理`hooks`的相关逻辑。
+因为`hooks`的更新是依赖于重新执行整个函数组件时重新执行`useState`等钩子函数的。（第一次`hook`设置`initial value`，后续执行`hook`执行更新操作）
+
+如果用在`class`组件中，不可能把执行钩子的函数再重复执行吧，这样`hook`不能在每次更新的时候都执行 也就无法更新了。
+
+而满足每次更新都执行的地方 `render`是一个。但是又有问题，`fiber`的memorizedState和`class`的memorizedState都是组件的state。但是组织方式不同。如果贸然在`class`的`render`中使用`hooks`，就会导致同一个`class Component`的`state`和在`constructor`中的`state`不一致。而且`hooks`取得`state`的方式是根据顺序来取的，在`render`中也没办法这么玩。
+
+所以React内部只有判断是`function Component`的时候才会去调用`renderWidthHooks`来处理`hooks`相关逻辑。
