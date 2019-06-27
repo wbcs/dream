@@ -23,7 +23,81 @@
 2. 结点每棵子树的位置是明确区分左右的，不能随意改变
 
 ## 二叉树的性质
+> 没时间就不写了
 
+## 创建二叉树
+```js
+function BTNode (data, left, right) {
+  this.data = data;
+  this.left = left;
+  this.right = right;
+}
+
+class BTree {
+  constructor(arr) {
+    this.root = null;
+    arr.forEach(val => this.insert(val));
+  }
+  insert(data) {
+    const tree = this.root;
+    const node = new BTNode(data, null, null);
+    if (!tree) {
+      this.root = node;
+      return;
+    }
+    let current = tree;
+    let parent;
+    while (true) {
+      parent = current;
+      if (data > current.right) {
+        current = current.right;
+        if (!current) {
+          parent.right = node;
+          break;
+        }
+      } else {
+        current = current.left;
+        if (!current) {
+          parent.left = node;
+          break;
+        }
+      }
+    }
+  }
+  // arr原本的顺序
+  preOrder() {
+    const stack = [];
+    let node = this.root;
+    while (node || stack.length) {
+      if (node) {
+        console.log(node.data);
+        stack.push(node);
+        node = node.left;
+      } else {
+        node = stack.pop();
+        node = node.right;
+      }
+    }
+  }
+  // arr排序后
+  inOrder() {
+    const stack = [];
+    let node = this.root;
+    while (node || stack.length) {
+      if (node) {
+        stack.push(node);
+        node = node.left;
+      } else {
+        node = stack.pop();
+        console.log(node.data);
+        node = node.right;
+      }
+    }
+  }
+}
+
+
+```
 
 
 # 树的数据结构
