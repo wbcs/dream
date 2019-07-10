@@ -118,18 +118,18 @@ $ npm install --save babel-polyfill
 ```javascript
 import 'babel-polyfill';
 ```
-`babel-polyfill`的两个主要缺点：
-1. 使用`babel-polyfill`会导致打出来的包非常大，因为`babel-polyfill`是一个整体，它把所有的静态方法都加到了原型链上(也包括没有用到的方法)，这个问题可以通过使用`core-js`的某个类库来解决，`core-js`都是分开的。
+`babel-polyfill`的两个主要缺点：
+1. 使用`babel-polyfill`会导致打出来的包非常大，因为`babel-polyfill`是一个整体，它把所有的静态方法都加到了原型链上(也包括没有用到的方法)，这个问题可以通过使用`core-js`的某个类库来解决，`core-js`都是分开的。
 2. `babel-polyfill`会污染全局环境，因为它对许多类的原型都做了修改。
 
 ## babel-plugin-transform-runtime
-在不使用这个插件的时候，每个文件所用到的公共方法都会生成一次，而使用之后就会将这些公共方法放到一个文件，然后每个文件`require`就可以了。
+在不使用这个插件的时候，每个文件所用到的公共方法都会生成一次，而使用之后就会将这些公共方法放到一个文件，然后每个文件`require`就可以了。
 
 也就是说，这个插件把重复定义变为重复引用，解决了代码重复问题。
 > 但是它不支持实例方法，比如：`[].includes();`，而且它需要`babel-runtime`作为依赖。`babel-plugin-transform-runtime`是按需引入静态方法，对于实例上的方法是无能为力的，解决办法是：`babel-polyfill`或`babel-preset-env`,推荐后者，开启useBuiltIns。
 
 ### babel-runtime和babel-plugin-transform-runtime的区别
-之前一直错误的以为babel-runtime也是一个plugin，现在发现babel-runtime只是一个库，一个模块，如果环境不支持Promise，可以在项目中加入：
+之前一直错误的以为babel-runtime也是一个plugin，现在发现babel-runtime只是一个库，一个模块，如果环境不支持Promise，可以在项目中加入：
 ```js
 require('@babel/runtime/core-js/promise');
 ```
@@ -208,7 +208,7 @@ env示例配置：
   ]
 }
 ```
-上面提到一个参数`useBuiltIns`,这个参数意思是：是否为每个文件自动添加插件兼容，或者把`import "@babel/polyfill"`根绝不同目标环境拆分为多个兼容插件。如：
+上面提到一个参数`useBuiltIns`,这个参数意思是：是否为每个文件自动添加插件兼容，或者把`import "@babel/polyfill"`根据不同目标环境拆分为多个兼容插件。如：
 ```js
 import '@babel/polyfill';
 ```
@@ -218,9 +218,9 @@ import "core-js/modules/es7.string.pad-start";
 import "core-js/modules/es7.string.pad-end";
 ```
 
-这个参数在`babel6`中只有`true、false`,在`babel7`中取值为：`"usage"|"entry"|false`,默认为`false`<br>详细配置请看：https://babeljs.io/docs/en/babel-preset-env#usebuiltins
+这个参数在`babel6`中只有`true、false`,在`babel7`中取值为：`"usage"|"entry"|false`,默认为`false`<br>详细配置请看：https://babeljs.io/docs/en/babel-preset-env#usebuiltins
 
-#执行顺序
+# 执行顺序
 + `plugin`会运行在`preset`之前
 + `plugin`会从前到后执行(和`webpack`的`loader`相反)
 + `preset`的执行顺序是从后向前，和`webpack`的`loader`相同。
@@ -236,4 +236,4 @@ import "core-js/modules/es7.string.pad-end";
 
 [深入Babel，这一篇就够了](https://juejin.im/post/5c21b584e51d4548ac6f6c99)
 
-[click me to fuck babel](https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/README.md)
+[Babel 手册](https://github.com/jamiebuilds/babel-handbook/blob/master/translations/zh-Hans/README.md)
