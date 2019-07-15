@@ -49,7 +49,7 @@ class BTree {
     let parent;
     while (true) {
       parent = current;
-      if (data > current.right) {
+      if (data > current.data) {
         current = current.right;
         if (!current) {
           parent.right = node;
