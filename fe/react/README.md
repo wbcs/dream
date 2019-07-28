@@ -15,11 +15,14 @@ React.createElement(
 );
 ```
 `React.createElement()`：
+
 ### 参数①：
 + 对于原生的html标签， 第一个参数是其对应的tag name字符串
-+ 对于ReactComponent，则是对应的组件的字符串(React根据字符串首字母大小写来判断是组件还是html标签)
++ 对于ReactComponent，则是对应的function或class(babel根据字符串首字母大小写来判断是组件还是html标签)
+
 ### 参数②
 是标签上对应的属性对象`props`
+
 ### 参数③及以后
 是对应的children，可以是：
 + 字符串
