@@ -1,42 +1,27 @@
 # 前言
-`JavaScript` 装饰器一共有4种：
-+ method Decorator
+`JavaScript` 装饰器一共有3种：
 + property Decorator
 + Class Decorator
 + Parameter Decorator
 
-# method Decorator
-```ts
-class MyClass {
-  @Decorator
-  method() {
-
-  }
-}
-
-function Decorator(target: any, key: string, descriptor: PropertyDescriptor) {
-  target === MyClass.prototype; // true
-  // 会在MyClass被声明的时候调用，而不是new 或者实例调用方法的时候调用
-}
-```
-
 # property Decorator
 ```ts
 class MyClass {
+  // 会在MyClass被声明的时候调用，而不是new 或者实例调用方法的时候调用
+  @Decorator props = 'props'
   @Decorator
   method() {
 
   }
 }
 
-function Decorator(target: any, key: string) {
-  target === MyClass.prototype; // true
+function Decorator(prototypeOfClass: any, key: string, descriptor: Descriptor) {
+  prototypeOfClass === MyClass.prototype; // true
 }
 ```
 
 
 # class Decorator
-
 ```ts
 @Decorator
 class MyClass {
