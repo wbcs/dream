@@ -85,6 +85,7 @@ const disposer = autorun(() => {
     console.log('错误捕获');
   },
   delay: 300, // 防抖， 300mm内执行一次
+  scheduler: (cb) => cb() // 自定义调度，默认直接执行
 });
 
 val.push(0);  // update [0]
