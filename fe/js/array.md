@@ -77,5 +77,7 @@ arr[8];
 ```
 因为这会访问原型链去查找。
 
+> 究其原因，就是因为js中的数据不一定是在同一段连续的内存。
+
 # 参考
 [V8 引擎中的 JavaScript 数组实现分析与性能优化](https://blog.csdn.net/xiebaochun/article/details/85711635)
