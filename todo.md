@@ -1,8 +1,9 @@
-+ nginx
+
 + mobx autorun
 + React ssr
 + webpack HMR
 + css3 var()
++ graphQL
 
 http://blog.codingplayboy.com/
 https://yjhjstz.gitbooks.io/deep-into-node/content/
