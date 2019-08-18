@@ -1,0 +1,193 @@
+# 函数的参数
+## arguments
+在非严格模式下，arguments对象和**实参**保持同步:
+```js
+function fn(a, b) {
+  console.log(a === arguments[0])
+  a = 'hehe'
+  console.log(a === arguments[1])
+}
+fn(1, 2)
+```
+> 结果都是true
+
+之所以给实参加粗，是因为即使保持同步，也只是和传入的参数保持一致，比如我如果没有传入b，然后我修改了b，这个时候arguments[0]和b是不一致的。
+
+但是在严格模式下，arguments和参数则不会保持同步。
+
+## 默认参数
+```js
+function fn(a, b = 1) {
+
+}
+fn(1)
+```
+**不传或者手动传递undefined**都会使用默认的参数。
+
+除此之外，和正常的ES5还有一些区别：
++ 形参列表里的参数，都相当于使用let声明的一样(意味着存在TDZ)
++ 默认参数可以是形参列表里的变量，但不可以是函数体内的变量哦。
++ 使用了默认参数，说明当前使用的ES6，所以当前scope都是处于strict模式下的。
+
+> 形参列表里的参数的scope和函数体内的scope是两个scope（书上是这么说的，但是他妈的如果是两个scope，那我重新用let声明为什么还报错，干.所以我觉得应该只是说形参列表的默认参数不能使用函数作用域内部的变量，但还是属于同一个scope，因为类似的for循环，括号里和花括号里是两个scope我就能用let重复声明）
+
+## 默认参数对arguments的影响
+记住一点，严格模式下arguments只和传入的实参一样，而且不保证同步。
+
+所以一旦使用了默认参数，就说明要么是没传，要么是传了undefined。那arguments里就肯定没有默认参数了。
+```js
+function fn(a, b = 1) {
+  console.log(arguments[0] === a) // true
+  console.log(arguments[1] === b) // false
+}
+fn(1)
+```
+
+## 无名参数
+```js
+function fn(a, ...args) {
+
+}
+```
+使用限制：
++ 不定参数只能在参数列表的最后
++ 不定参数不能用在setter中，因为setter的参数只能有一个value，在不定参数的定义中是可以有无限多。这两者在当前上下文中不允许
+
+一些注意的点：
++ arguments中只存储传入的参数
++ fn.length则是命名参数的个数，也就是说fn的length属性是不包括args中的东东的
+
+> 其实在ES4的草案中，arguments对象是会被不定参数给干掉的，不过ES4搁置以后，等到ES6出来，它很ES4的区别是保留了arguments对象
+
+# 箭头函数
+与普通函数的区别：
++ 没有new.target、this、arguments、super，这些东西都是最近一层非箭头函数的东西.（所以，一旦不存在这样的函数，但是在箭头函数中访问了这些keyword就会抛出错误）
++ 不能被new调用，没有`[[construct]]`内部方法
++ 没有prototype属性
++ this遵循词法作用域，运行过程中不会改变
++ 无论是否为严格模式，都不能有同名的参数
++ 因为没有arguments，所以参数只能通过命名参数和不定参数来访问
++ 不能使用yield关键字，所以也就不能当做generator函数咯
+> 注意，能否被用作constructor和其有无prototype属性无关
+
+就算用call、apply、bind这样的方法，也没法改变箭头函数的this。不过通过bind可以传递参数倒是真的
+
+# 函数的name属性
+name属性是为了更好地辨别函数：
+```js
+function fn() {}  // fn
+const a = function() {} // a
+const b = fn // fn
+const c = a // a
+const d = function hehe() {} // hehe
+```
+注释就是对应函数的name。仔细观察很容易发现，如果函数是使用函数声明创建的，那name就是function关键字后的string。如果是使用赋值语句创建的，那name就是对应的变量名。而且一旦function.name确定下来，后续赋值给其他变量也不会改变。其中function声明比赋值语句的优先级高。
+
+特殊情况：
+```js
+const obj = {
+  get name() {
+
+  },
+  hehe() {
+
+  }
+}
+console.log(obj.name) // 书上说是 get name，但是我亲测是undefined啊
+console.log(obj.hehe) // hehe
+```
+另外bind出来的函数，name带有bound前缀；通过Function创建的函数带有anonymous
+
+> 函数的name属性不一定同步于引用变量，只是一个协助调试用的额外信息而已，所以不要使用name属性来获取函数的引用
+
+# 函数节流、函数防抖
+
+# 尾递归
+尾调用就是函数作为另一个函数的最后一条语句被调用。
+
+在ES5中，尾调用的实现和普通的函数调用一样，都是创建一个新的stack frame，将其push到调用栈，来表示函数调用，如果在循环调用中，调用栈的大小过大就会爆栈。
+
+而尾递归优化呢，指的就是不在创建新的stack frame，而是清除掉当前的stack frame，然后重用即可。这样，尾递归的时候，整个调用栈的大小就不会变了，达到了优化的效果。
+
+以下情况会优化：
++ 尾调用不访问当前stack frame的变量。也就是说函数不能是一个闭包
++ 在函数内部，必须是最后一条语句
++ 尾调用的结果作为返回值返回
+```js
+function fn() {
+  // 其他语句
+  return fn()
+}
+```
+
+# 深入点不知道的
+JavaScript函数中有两个内部方法：`[[call]]`和`[[construct]]`。通过new来调用函数的时候执行的是construct内部方法，而正常调用则执行call内部方法。
+
++ 前者负责创建一个实例instance，然后执行函数体。当使用new调用函数的时候，new.target被赋值为new操作符的目标，通常就是被new调用的构造函数。所以如果需要判断函数是否被new调用，则只需要查看new.target是否为undefined即可
++ 后者直接执行代码中的函数体
+> 具有`[[construct]]`内部方法的函数被统称为构造函数。不是所有的函数都是构造函数，所以不是所有的函数都能够被new调用（比如箭头函数）。这个具体细节看下文。
+
+## JS中的三种Function
+`JS`目前具有三种类型的`function object`：
++ `ECMAScript Function Object`：所有通过JS语言生成的`function object`都是`ECMAScript Function Object`；
++ `Built-in Function`：引擎内置的所有`function object`如果没有实现为`ECMAScript Function Object`，必须实现为此处的`Built-in Function Object`；
++ `Bound Function`：`Function.prototype.bind`生成的`function object`为<u>Bound Function Object</u>，调用<u>Bound Function Object</u>会导致调用绑定的<u>bound target function</u>；
+
+
+
+ES6标准指出，函数内部都有两个方法：`[[call]] [[construct]] `。前者是普通调用，后者是new调用。
+
+而即便都是new调用，built in 和 普通的 function object还是有所差别：
++ `new operator`作用于`ECMAScript Function Object`会根据当前`function object`的`prototype`属性生成一个新的对象，并将其作为`this`传入`function object`进行调用；
++ `new operator`作用于`Built-in Function Object`的时候不会生成一个新的对象作为`this`传入当前的`function object`，而是由当前的`function object`在`function call`的时候自己生成一个新的对象。
+
+> 经常看到面试题问`new operator`执行了哪些操作，然后就开始巴拉巴拉：根据原型生成一个新的对象，然后将新的对象作为this调用函数，最后根据函数的返回值是否为对象来判断应该返回什么。。。（心中千万只草泥马飘过）；当然，如果要用`JS`来模拟`new operator`那只能按照这个流程搞，顶多再用上`new.target`。
+
+## js中的函数都有prototype？
+以前一直以为所有`js`函数都有`prototype`，直到最近才发现不是。
+
+除非在特定函数的描述中另有指定，否则不是构造函数的内置函数不具有原型属性。
+
+也就是说，`js`的一些内置函数本来就没打算用作`constructor`，也就没有添加`[[construct]] internal-method`。但是反过来不一定成立，因为有的构造函数没有`prototype`,但它仍然是一个构造函数，比如：
+```js
+console.log(Proxy.prototype); // undefined
+// 但是可以通过new Proxy(args)来创建对象
+```
+
+按照规范，如果一个`function-object` 既具有`prototype`属性，又具有`[[construct]] internal-method`，那么它就是一个`constructor`，此时该`function-object`承担着`creates and initializes objects`的责任；
+
+但`Proxy constructor`为什么没有`prototype`属性呢？虽然`constructor`用于 `creates and initializes objects`，但如果生成的对象的`[[prototype]]`属性不需要`constructor`的`prototype`属性初始化，那么`constructor`的`prototype`就没有存在的必要。
+
+> 也就是说，大部分情况下只要某个function有prototype属性，同时又具有`[[constructor]]`，那这个function就是一个constructor。
+
+但是某些特殊情况下也会有例外，即：它不承担创建对象并且初始化。但是由于某些原因它又同时具备了上述条件。
+> 这是规范中指出的，目前还没有在`built-in function`中发现过这种特例。不过在`function object`中有两个特例。
+
+## generator function
+`generator` 不是 `constructor` ，但是同时具备 `prototype`
+
+## Function.prototype.bind生成的Bound function object
+通过 `bind` 生成的`bound function` 是没有 `prototype` 属性，不过它仍然可以当作一个 `constructor`。
+
+## 总结
+综上所述，明确了以下几点：
+1. 不是只有`constructor`才能通过`new`调用的，例如：`bound function object`；
+2. `constructor`不是只能通过`new`来调用（这个大家都知道）；
+3. 不是所有的`constructor`都能通过`new`来调用的，比如：`Symbol`。
+
+
+## 延伸
+一个`function object`可以用`new`调用的条件是什么？
+
+也就是说，是否可以用`new`方式调用，和函数是不是构造函数没有关系，有没有`prototype`也没关系，只要函数对象上具有内部的`[[construct]]`，并且函数本身是允许`new`调用的，就可以通过`new`来调用该`function`。
+
+
+
+# 一些值得注意的点
++ 严格模式下，function声明是存在块级作用域的。不过在当前的scope中不存在TDZ。非严格模式下则不存在块级作用域的特性，会直接提升至顶层作用域
+```js
+if (true) {
+  function a() {}
+}
+console.log(a) // undefined
+```
