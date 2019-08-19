@@ -191,3 +191,25 @@ if (true) {
 }
 console.log(a) // undefined
 ```
+
++ 方法和函数：在ES6之前js中的方法就是某个函数作为某个对象的非数据属性，除此之外和函数没有任何区别。但是在ES6之后，所有的方法内部都有一个`[[HomeObject]]`属性，对象的方法有，但是普通的函数则没有。一般情况下都不会有什么区别，但是在使用`super`的时候会有区别
+```js
+const proto = {
+  method() {
+    return 'this is a method on proto'
+  }
+}
+
+const obj = Object.setPrototypeOf({
+  test() {
+    console.log(super.method())
+  }
+}, proto)
+obj.test() // this is a method on proto
+
+const obj = Object.setPrototypeOf({}, proto)
+obj.test = function() {
+  super.method() // 语法错误
+}
+obj.test()
+```
