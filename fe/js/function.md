@@ -171,10 +171,10 @@ console.log(Proxy.prototype); // undefined
 
 ## 总结
 综上所述，明确了以下几点：
-1. 不是只有`constructor`才能通过`new`调用的，例如：`bound function object`；
-2. `constructor`不是只能通过`new`来调用（这个大家都知道）；
-3. 不是所有的`constructor`都能通过`new`来调用的，比如：`Symbol`。
-
++ 不是所有函数都是构造函数，必须有内部方法`[[construct]]`
++ 不是所有函数都有`prototype`属性
++ 有无`prototype`属性和函数是否为构造函数无关，只要有`[[construct]]`属性就是构造函数
++ 不是有所的构造函数都能被`new`调用，比如`Symbol`
 
 ## 延伸
 一个`function object`可以用`new`调用的条件是什么？
