@@ -1,95 +1,129 @@
-# JSX
-```html
-<div>
-    Content1
-    Content2
-</div>
-```
-地球人都知道JSX通过babel编译，实际上等价于：
-```javscript
-React.createElement(
-	'div', 
-	{className: 'cn'},
-	'Content1',
-	'Content2'
-);
-```
-`React.createElement()`：
 
-### 参数①：
-+ 对于原生的html标签， 第一个参数是其对应的tag name字符串
-+ 对于ReactComponent，则是对应的function或class(babel根据字符串首字母大小写来判断是组件还是html标签)
 
-### 参数②
-是标签上对应的属性对象`props`
 
-### 参数③及以后
-是对应的children，可以是：
-+ 字符串
-+ 组件
-+ 数组，可以是数组的原因是：React可以将children分组，作为一个参数传递
-+ html原生标签，也就是会调用`React.createElement`的东东
-+ 基本类型：`false、true、null、undefined`
 
-## 将参数传入React.createElement后，会得到虚拟DOM：
-```javascript
-{
-	type: 'div', // 如果是React Component 此处位对应组件的function、class 的引用
-	props:{
-		className: 'cn',
-		children: [
-			'Content1',
-			'Content2',
-		]
+# React的一些优化点
+## 内敛参数的优化
+我们都知道`React`更新的时候会重新执行`render`得到`VNode`，然后进行`diff`。所以一旦存在内敛变量，就会导致重新进行不必要的更新。所以解决办法是不要传递内敛的东西，可变的东西放到`state`中，不可变的放到`this`中。
+
+但是在一些事件`handle`中，需要给`cb`传递一些参数：
+```tsx
+class App extends React.Component {
+	handleClick = (e: React.MouseEvent<HTMLButtonElement>, arg: string) => {
+		// ...
+	}
+	render() {
+		return (
+			<div>
+				<button onClick={(e) => this.handleClick(e, 'args')}>click me</button>
+			</div>
+		)
 	}
 }
 ```
-> ps: 无论`children`是作为数组还是参数列表传递都没关系 —— 在生成的虚拟DOM对象的时候，它们最后都会被打包在一起的。
+这个时候如果子元素是组件，则应该把参数传递给组件，然后子组件从`props`取值传递就行了。
+如果是`DOM`，常见的做法是把参数放到`dataset`中。
 
-# ReactDOM.render()
-等到虚拟`DOM`对象完成创建之后，`ReactDOM.render`会按照以下规则将其转换为浏览器可识别的`DOM`：
-+ 1. 如果`type`是`string`，则创建该类型的`HTML`标签，附带上`props`的所有属性
-+ 2. 如果type是函数（类），调用它，对其结果递归重复这个过程。
-+ 3. 如果props下有children，则在父节点下，针对每个child重复以上过程。
+>　但是对于children就没有办法了，可以考虑使用`renderProps`
 
-最终得到原生的HTML
-
-# state发生变化时，更新
-`ReactDOM.render()`在根节点上调用一次后，后续的更新都是通过state来更新的。
-
-当一个页面不是重新更换掉`ReactDOM.render`中的参数时，React内部会更新，流程如下：
-
-在同一个Node节点再次执行`ReactDOM.render`，启用`diff`，而不是从头到尾再次重新创建所有的DOM节点。进而确定DOM中哪些节点需要更新，哪些保持不变。
-
-
-## 具体过程
-
-虚拟DOM放这方便看：
-```javascript
-{
-	type: 'div', // 如果是React Component 此处位对应组件的function、class 的引用
-	props:{
-		className: 'cn',
-		children: [
-			'Content1',
-			'Content2',
-		]
+## SCU, React.memo, PureComponent
+在父组件频繁更新的时候，有可能传递给子组件的`props`却没有变，这样会到值子树全部频繁更新。所以`React`给开发者提供了一个SCU。让开发者来决定是否要更新子树：
+```tsx
+class Hehe extends React.Component {
+	shouldComponentUpdate(nextProps, nextState) {
+		return true
 	}
 }
-// 如果是组件，则是：
-{
-	type: Component,
-	props: {},
+```
+而PureComponent则是React进行一次默认的shallow diff,等价于:
+```tsx
+class Hehe extends React.Component {
+	shouldComponentUpdate(nextProps) {
+		// 这里只对props进行ｄｉｆｆ
+		const prevProps = this.props
+		if (Object.is(prevProps, nextProps)) return false
+		if (
+			typeof prevPrpos !== 'object'	&& prevProps !== null ||
+			typeof nextProps !== 'object' && nextProps !== null
+		) {
+			return true
+		}
+		const prevKeys = Object.keys(prevProps)
+		const nextKeys = Object.keys(nextProps)
+
+		if (prevKeys.length !== nextKeys.length) {
+			return true
+		}
+
+		return !prevKeys.every(key => {
+			return Object.is(prevProps[key], nextProps[key])
+		})
+	}
+}
+
+class Hehe extends React.PureComponent {
 }
 ```
-### type为string时
-+ 先判断string是否和之前一样。如果不一样，直接干掉(unmount)当前DOM和其children。否则判断props。
-+ 如果props没变，则DOM保持不变，否则React调用标准API修改DOM的属性，判断children的具体过程请看下文。
+至于`React.memo`则可以认为是`function component`的`SCU`，只不过它的返回值和`SCU`作用相反，更新`return false`, 反之 `return true`
 
-### type不是string(对应class、function的引用)
-+ 检查组件内部逻辑，根据render返回的值来进行判断(过程同string)。
+不过需要注意的一点就是，一旦父组件给子组件传递的`props`存在内敛或者`children`就不要用了，因为结果一定是会更新，这个时候的`shallow diff`是没有意义的
 
-### 比较children的过程
-如果子元素是一个数组，并且他们有key，则根据children的key来判断是否跟未更新时是同一个元素，如果key一样，则保留它，这样如果有子元素被删除的情况，只是改变剩下元素的顺序就可以了。
+## React.createContext
+在多个不同层级的组件们需要使用相同的数据的时候，这个时候可以使用`React.createContext`
+```tsx
+const { Provider, Comsumer } = React.createContext('defaultValue')
 
-而如果children没有key，这个时候React会将children看做是一个数组(其实children本身就是数组)，根据数据的index来逐个比较。这个时候如果有被删除的子元素，则会让React把从不一样的元素之后的所有子元素全部干掉，然后重新生命、mount。这个代价是很大的，这也是为什么不要把index作为key的原因。
+const app = () => {
+	return (
+		<Prodiver value="your-fucking-value">
+			<Component />
+		</Provider>
+	)
+}
+const Component = () => {
+	return (
+		<Consumer>
+			{value => (
+				// ...
+			)}
+		</Consumer>
+	)
+}
+```
+> 如果只是为了避免传递props，在需要的props过多的情况下，可以通过组件组合来写。
+
+`context`的数据不会因为父组件在`SCU return false`而没有更新.还有一点就是，最好在`<Provider value={}>`传递的value不要是内敛的，因为这样一旦当前组件频繁刷新，就会造成所有使用这个context的组件全部刷新，影响效率。
+
+## code split
+现在的ＳＰＡ把资源打包到一起，造成首屏过慢，所以可以考虑首次加载只下载需要的代码，因为有的代码可能永远也不会用到。
+```js
+import('./module').then(obj => {
+	// ...
+})
+```
+webpack解析到这个语法之后会自动进行代码分割。不过对于代码分割也要一些技巧，不能影响用户体验，最常用的做法就是根据路由来分割代码：
+```tsx
+// router.ts
+export default [{
+	path: '/your-path',
+	component: lazy(() => import('./your-component'))
+}]
+
+// app.tsx
+import { Suspense } from 'react'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import Routes from './router'
+
+const App: React.SFC<{}> = () => (
+	<Router>
+		<Suspense fallback={<Loading />}>
+			<Switch>
+				{Routes.map(route => <Route path={route.path} component={route.component} />)}
+			</Switch>
+		</Suspense>
+	</Router>
+)
+```
+> 在页面跳转的时候，人们都习惯有一个加载的东东
+
+其他代码分割的方案 [Suspense lazy](Suspense%20lazy.md)
