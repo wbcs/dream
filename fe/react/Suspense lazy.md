@@ -4,9 +4,11 @@ import { Suspense, lazy } from 'react';
 const Component = lazy(() => import('./path/component'));
 
 function App() {
-  return <Suspense fallback={'loading ...'}>
-    <Component />
-  </Suspense>;
+  return (
+    <Suspense fallback={'loading ...'}>
+      <Component />
+    </Suspense>
+  )
 }
 ```
 在`Component`还没有下载完毕之前，`Suspense`会返回`fallback`中的组件。
@@ -15,17 +17,19 @@ function App() {
 如果`React`没有`Suspense`、`lazy`的话，想要达到类似的效果就只能这么写：
 ```js
 function App() {
-  const [Component, setComponent] = useState(null);
+  const [Component, setComponent] = useState(null)
+
   useEffect(() => {
     import('./path/component').then(res => {
-      setComponent(res.default);
-    });
-  }, []);
-  return <div>
-    {Component
-      ? <Component />
-      : <span>loading...>}
-  </div>;
+      setComponent(res.default)
+    })
+  }, [])
+
+  return (
+    <div>
+      {Component ? <Component /> : <span>loading...>}
+    </div>
+  )
 }
 ```
 但是这么做有问题：
@@ -54,6 +58,24 @@ const Component = lazy(() => import('./path/component/'));
 
 ## import()
 规定`import` 必须返回一个会`resolve ESModule`的`Promise`，并且这个`Module`的`default`是一个返回合法的`React Component`。
+
+所以，如果想动态加载非默认导出的组件可以这么写：
+```tsx
+// componets.tsx
+export const Component0 = () => {}
+export const Component1 = () => {}
+
+// middleware.tsx
+export { Component1 as default } from './components'
+
+// router.ts
+{
+  path: '',
+  component: lazy(() => import('./middleware'))
+}
+```
+> 这样既可以动态引入组件，又不会引入多余的组件
+
 ```js
 const component = lazy(() => {
   return new Promise((resolve) => {
