@@ -43,8 +43,8 @@ class Hehe extends React.Component {
 		const prevProps = this.props
 		if (Object.is(prevProps, nextProps)) return false
 		if (
-			typeof prevPrpos !== 'object'	&& prevProps !== null ||
-			typeof nextProps !== 'object' && nextProps !== null
+			typeof prevPrpos !== 'object'	|| prevProps !== null ||
+			typeof nextProps !== 'object' || nextProps !== null
 		) {
 			return true
 		}
