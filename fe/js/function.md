@@ -101,6 +101,48 @@ console.log(obj.hehe) // hehe
 > 函数的`name`属性不一定同步于引用变量，只是一个协助调试用的额外信息而已，所以不要使用`name`属性来获取函数的引用
 
 # 函数节流、函数防抖
+节流就是等到你不触发了我在执行：
+```js
+function debounce(fn, time, immediate = false) {
+  let clear
+  return function(...args) {
+    if (immediate) {
+      immediate = false
+      fn(...args)
+      return
+    }
+    if (clear) {
+      clearTimeout(clear)
+    }
+    clear = setTimeout(() => {
+      fn(...args)
+      clear = 0
+    }, time)
+  }
+}
+```
+防抖就是无论你触发多少次，我只在规定的时间里触发一次
+```js
+function throttle(fn, time, immediate = false) {
+  let clear
+  let prev = 0
+  return function(...args) {
+    if (immediate) {
+      immediate = false
+      fn(...args)
+      return
+    }
+    if (!clear && Date.now() - prev >= time) {
+      prev = Date.now()
+      clear = setTimeout(() => {
+        fn(...args)
+        clear = 0
+        prev = 0
+      }, time)
+    }
+  }
+}
+```
 
 # 尾递归
 尾调用就是函数作为另一个函数的最后一条语句被调用。
