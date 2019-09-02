@@ -1,4 +1,9 @@
+# typescript比JavaScript多了什么？
++ 为JavaScript添加了类型
++ 提供未来版本的语法到当前js引擎的功能
+
 # 为什么要使用typescript？
+## 强类型、弱类型
 + 强类型、弱类型：类型转换是否需要显示区分。
   + 前者需要显示声明，比如`C/C++`中`int doubleToInt = (int)doubleNumber;`；
   + 后者则是隐含的，不需要显示声明，比如`JavaScrip`t中`const num = str;`
