@@ -1,129 +1,19 @@
+对React的一些思考
+
+# 既然受控组件会导致组件频繁rerender，那为什么不直接使用非受控组件呢？
+`React` 是一个用于构建视图的框架，它想 `control everything` 。也就是说页面上显示的一些 `View` ，都得对应于 `React` 的 `state` 。
+
+但是表单元素的输入，它的值是浏览器原生去维护的，所以一旦 `React` 给了 `input` 一个 `value` ，在响应输入的时候， `input` 到底是以 `React` 的 `state` 为准还是以用户输入的问准？
+
+`React` 给了用户两种选择：
++ 受控组件：以 `React` 的 `state` 为准
++ 非受控组件：以用户输入为准
+
+`React` 的受控组件认为 `value` 不能单独存在，必须要有对应的 `onInput` 、 `onChange` 、 `disabled` 、 `readOnly` 事件、属性一起使用，以达到受控的目的。所以如果只提供一个 `value` ， `React` 内部会有默认的事件去阻止 `input` 使用用户输入的值，让它不可编辑。(内部存储 `jsx` 上次赋给他的值，只能由内部事件去修改)
+
+因为 `value` 以 `state` 为准的原因，想要默认值就只能再定义一个属性了： `defaultXXX`
 
 
-
-
-# React的一些优化点
-## 内敛参数的优化
-我们都知道`React`更新的时候会重新执行`render`得到`VNode`，然后进行`diff`。所以一旦存在内敛变量，就会导致重新进行不必要的更新。所以解决办法是不要传递内敛的东西，可变的东西放到`state`中，不可变的放到`this`中。
-
-但是在一些事件`handle`中，需要给`cb`传递一些参数：
-```tsx
-class App extends React.Component {
-	handleClick = (e: React.MouseEvent<HTMLButtonElement>, arg: string) => {
-		// ...
-	}
-	render() {
-		return (
-			<div>
-				<button onClick={(e) => this.handleClick(e, 'args')}>click me</button>
-			</div>
-		)
-	}
-}
-```
-这个时候如果子元素是组件，则应该把参数传递给组件，然后子组件从`props`取值传递就行了。
-如果是`DOM`，常见的做法是把参数放到`dataset`中。
-
->　但是对于children就没有办法了，可以考虑使用`renderProps`
-
-## SCU, React.memo, PureComponent
-在父组件频繁更新的时候，有可能传递给子组件的`props`却没有变，这样会到值子树全部频繁更新。所以`React`给开发者提供了一个SCU。让开发者来决定是否要更新子树：
-```tsx
-class Hehe extends React.Component {
-	shouldComponentUpdate(nextProps, nextState) {
-		return true
-	}
-}
-```
-而PureComponent则是React进行一次默认的shallow diff,等价于:
-```tsx
-class Hehe extends React.Component {
-	shouldComponentUpdate(nextProps) {
-		// 这里只对props进行ｄｉｆｆ
-		const prevProps = this.props
-		if (Object.is(prevProps, nextProps)) return false
-		if (
-			typeof prevPrpos !== 'object'	|| prevProps !== null ||
-			typeof nextProps !== 'object' || nextProps !== null
-		) {
-			return true
-		}
-		const prevKeys = Object.keys(prevProps)
-		const nextKeys = Object.keys(nextProps)
-
-		if (prevKeys.length !== nextKeys.length) {
-			return true
-		}
-
-		return !prevKeys.every(key => {
-			return Object.is(prevProps[key], nextProps[key])
-		})
-	}
-}
-
-class Hehe extends React.PureComponent {
-}
-```
-至于`React.memo`则可以认为是`function component`的`SCU`，只不过它的返回值和`SCU`作用相反，更新`return false`, 反之 `return true`
-
-不过需要注意的一点就是，一旦父组件给子组件传递的`props`存在内敛或者`children`就不要用了，因为结果一定是会更新，这个时候的`shallow diff`是没有意义的
-
-## React.createContext
-在多个不同层级的组件们需要使用相同的数据的时候，这个时候可以使用`React.createContext`
-```tsx
-const { Provider, Comsumer } = React.createContext('defaultValue')
-
-const app = () => {
-	return (
-		<Prodiver value="your-fucking-value">
-			<Component />
-		</Provider>
-	)
-}
-const Component = () => {
-	return (
-		<Consumer>
-			{value => (
-				// ...
-			)}
-		</Consumer>
-	)
-}
-```
-> 如果只是为了避免传递props，在需要的props过多的情况下，可以通过组件组合来写。
-
-`context`的数据不会因为父组件在`SCU return false`而没有更新.还有一点就是，最好在`<Provider value={}>`传递的value不要是内敛的，因为这样一旦当前组件频繁刷新，就会造成所有使用这个context的组件全部刷新，影响效率。
-
-## code split
-现在的ＳＰＡ把资源打包到一起，造成首屏过慢，所以可以考虑首次加载只下载需要的代码，因为有的代码可能永远也不会用到。
-```js
-import('./module').then(obj => {
-	// ...
-})
-```
-webpack解析到这个语法之后会自动进行代码分割。不过对于代码分割也要一些技巧，不能影响用户体验，最常用的做法就是根据路由来分割代码：
-```tsx
-// router.ts
-export default [{
-	path: '/your-path',
-	component: lazy(() => import('./your-component'))
-}]
-
-// app.tsx
-import { Suspense } from 'react'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import Routes from './router'
-
-const App: React.SFC<{}> = () => (
-	<Router>
-		<Suspense fallback={<Loading />}>
-			<Switch>
-				{Routes.map(route => <Route path={route.path} component={route.component} />)}
-			</Switch>
-		</Suspense>
-	</Router>
-)
-```
-> 在页面跳转的时候，人们都习惯有一个加载的东东
-
-其他代码分割的方案 [Suspense lazy](Suspense%20lazy.md)
+# 它有哪些缺点？？
++ 合成事件，React自己弄一套事件系统，代理到document之上，貌似磨平了各种兼容性问题，也不会有大量相同事件都绑定在多个类似的元素上面的问题。但是合成事件和原生事件两者的并行存在，导致事件的管理比较混乱：比如在body上绑定了一个原生事件，想要阻止子元素冒泡到它身上，只能在子元素上面加ref添加原生事件去阻止冒泡等等
++ 提供的功能少，但是体积缺很大，不知道为什么会这样？是因为增添了任务调度的包？多了自己定义的事件系统?还是其他什么
