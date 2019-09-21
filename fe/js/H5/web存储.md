@@ -74,6 +74,20 @@ document.addEventListener('storage', callback, options);
 1. 同源策略的限制：要访问同一个`localStorage`页面必须来自同一个域名（子域名无效），必须满足同源策略。
 2. 存储大小的限制：对`Web Storage`的限制因浏览器而异，一般来说，存储空间的大小限制是以`Origin`（协议、域名、端口）为单位的。也就是说每个`Origin`都有一个可以保存数据的空间。对于`localStorage`，大多数浏览器都会设置每个`Origin` 5MB的限制，`Chrome、Safari`是2.5MB。
 
+## 并发问题
+我们都知道js是单线程不用担心并发问题，但是浏览器的不同标签有可能是单独的进程，那这个时候如果不同页面同时向localStorage去更改数据，这个时候就有可能造成数据不一致的情况，所以解决办法如下：
+```js
+// storage.js
+// 默认可以修改
+let flag = true
+export const set = (key, val) => {
+  if (!flag) return
+  localStorage.setItem(key, val)
+}
+
+document.addEventListener('storage', )
+```
+
 
 # 四、IndexDB
 `Indexed Database API`，简称为`IndexDB`。是在浏览器中保存结构化数据的一种数据库。它的设计思想是方便保存和读取`JavaScript`对象，同时还支持查询和搜索。`IndexDB`设计操作完全的**异步的**。
