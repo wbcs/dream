@@ -1,2 +1,5 @@
-
-世上有很多佐助，但佐助却很难找到自己的鸣人。而鸣人，其实也是佐助，只是他的鸣人，是伊鲁卡。
+# todo
+- [ ] OS进程通信
+- [ ] redux(redux-saga, redux-observable)
+- [ ] rxjs
+- [ ] proxy(reactive)
