@@ -3,3 +3,4 @@
 - [ ] redux(redux-saga, redux-observable)
 - [ ] rxjs
 - [ ] proxy(reactive)
+- [ ] serverless
