@@ -59,3 +59,76 @@ const config {
 ok，这样就有直接使用`npm`上的`loader`一样的体验呐。
 
 # 进阶
+刚刚的代码
+```js
+module.exports = function(source) {
+  return `
+    export default {
+      name: 'wbingcs'
+    }
+  `
+}
+```
+## 取到options
+loader在使用的时候是可以传递参数的：
+```js
+{
+  "test": /\.wb$/,
+  use: {
+    loader: 'wb-loader',
+    options: {
+      blah: 'blahblahblah...'
+    }
+  }
+}
+```
+要取到这个options：
+```js
+const loaderUtils = require('loader-utils')
+module.exports = function(source) {
+  const options = loaderUtils.getOptions(this)
+  return `
+    export default {
+      name: 'wbingcs'
+    }
+  `
+}
+```
+
+## callback
+除了上面直接return结果，`loader`中还能够使用`callback`来告诉`webpack`：
+```js
+module.exports = function(source) {
+  this.callback(error, res, sourceMap, AST)
+}
+```
+`callback`的参数从字面意思就能读出来了，分别是错误、结果、sourceMap、AST。因为得到`sourceMap`很耗费时间，而且只在dev环境中会用到，所以呢可以用`this.sourceMap`来判断是否需要用到`sourceMap`。
+
+除了这个`this.callback`，还有一个`callback`。之前我们说过，`loader`的执行可能是同步也可能是异步，上面的例子都是同步。接下来看看异步怎么处理：
+```js
+module.exports = function(source) {
+  const callback = this.async()
+  someAsyncAction()
+    .then(res => {
+      callback(error, res, sourceMap, AST)
+    })
+}
+```
+
+## 二进制数据
+上面的例子中，`source`都是`UTF-8`的`string`。但是有的时候我们需要以二进制来处理文件。这个时候可以用这个属性来告诉`webpack`是否向我输入二进制:
+```js
+module.exports.raw = true
+```
+这样`source`就是对应的buffer啦
+
+## loader的缓存
+因为转换操作需要耗费大量的时间，所以`webpack`会缓存`loader`的结果，如果说被处理的文件、依赖的文件没有发生变化，会直接使用之前的结果，是不会重新去调用`loader`的。如果需要告诉`webpack`我的`loader`你不能缓存的话，可以这样：
+```js
+module.exports = function(source) {
+  this.cacheable = false
+}
+```
+
+# 总结
+`webpack`这玩意在fe还是蛮重要的，还是得学。绕不过去的
