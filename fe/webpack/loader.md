@@ -3,7 +3,7 @@
 + `loader`的处理顺序：如果`use/loader`是一个数组，那`webpack`调用`loader`的顺序将会是倒叙
 
 
-# 写一个`loader`
+# 写一个loader
 首先明白一点，一个`loader`就是一个`node`模块。而对于要发布到`npm`的`loader`，`package.json`中需要添加一个字段，这个字段的`key`就是`loader`，值为`loader`的名字：
 ```json
 {
@@ -131,4 +131,5 @@ module.exports = function(source) {
 ```
 
 # 总结
+有了这些API，再写转换规则就很easy了。
 `webpack`这玩意在fe还是蛮重要的，还是得学。绕不过去的
