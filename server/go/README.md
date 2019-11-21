@@ -110,6 +110,40 @@ func sum(arr *[]int) int {
   return sum
 }
 ```
+> 需要注意的一点是，go中的数组在直接进行赋值的时候是值拷贝。对象也是值拷贝
+
+## slice
+```go
+var slice []int  // 不指定length
+var slice0 []int = make([]int, 10)
+slice1 := make([]int, 10)
+```
+还可以用数组来制造切片，类似js中的slice
+```go
+arr := [5]int {1,2,3,4,5}
+slice := arr[0, 6]
+```
+要扩充cap或者length直接使用append就可以了:
+```go
+s := []int {1,2,3} // len 3, cap 3
+s = append(s, 1) // len 4, cap 6
+```
+append的效果就是，只要length不大于cap就直接新增元素即可。一旦length大于cap，cap会变为原来的2倍
+
+## map
+```go
+map0 := map[string][string] = {
+  "key": "value"
+}
+// 或者
+map0 := make(map[string]string)
+map0["key"] = "value"
+```
+删除：
+```go
+delete(map0, "key")
+```
+> 可以发现go和js的一个很大不同，js的函数都是方法，在特定对象上调用。而go的功能性函数都是全局的函数，通过传递参数来执行对应的功能。
 
 # tips
 
