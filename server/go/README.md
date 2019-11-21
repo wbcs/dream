@@ -163,3 +163,11 @@ slice := arr[start:end]
 slice和数组很像，但是是引用传值的.并且能够像js那样无限push（go里叫append）
 
 它的类型系统和ts都是后置，不过直接写就行了，不需要写:
+
+# 总结
+go中的类型有：
++ number: `int int8 int16 int32 uint uint8 uint16 uint32`， `byte`, `float float32 float64`, `rune`
++ char/string: `rune`, `string`。其实go中没有真正意义的字符型，rune只是int32的别名罢了,byte只是uint的别名
++ 指针类型： `type*`
++ 引用类型：`slice`, `map`
++ 其他：`数组`,`函数`
