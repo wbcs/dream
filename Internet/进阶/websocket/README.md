@@ -59,7 +59,7 @@ Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
 ## Sec-WebSocket-Accept
 当server同意升级时，会在响应中包含这个头部，它的值是根据请求头中的  `Sec-WebSocket-Key` 值与 `258EAFA5-E914-47DA-95CA-C5AB0DC85B11` 连接后取 SHA-1 的哈希，然后对结果进行base64编码。
 
-![](./assets/websocket.png)
+![](../assets/websocket.png)
 ```js
 const crypto = require('crypto');
 const magic = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
