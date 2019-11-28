@@ -93,10 +93,9 @@ const component = lazy(() => {
 # Suspense
 > `Suspense`：悬疑.
 
-只要内部还有没有 `resolve` 的组件，就直接返回 `fallback` 的内容。
+只要内部还有没有 `resolve` 的组件，就返回 `fallback` 的内容。
 
-`React`的新特性，它类似于懒加载，等到需要加载某些组件的时候才去下载相关代码。在没有这个新特性之前都是由第三方库来负责`code-spliting`的。现在`React`把他提升到了框架层面。
-
+它类似于懒加载，等到需要加载某些组件的时候才去下载相关代码。在没有这个新特性之前都是由第三方库来负责`code-spliting`的。现在`React`把他提升到了框架层面。
 
 # 总结
 整体来看，`React`引入`Suspense`和`lazy`还是非常屌的。
