@@ -1,21 +1,20 @@
+# JavaScript进阶系列之function篇
+每天都在codeing，但是如果没有总结的话，根本记不住。以后定期写文章，不管有没有人看都会有一定的收获。
+
+## 目录：
++ [函数的参数](#函数的参数)
++ [箭头函数](#箭头函数)
++ [函数的name属性](#函数的name属性)
++ [函数节流、函数防抖](#函数节流、函数防抖)
++ [尾递归](#尾递归)
++ [深入点不知道的](#深入点不知道的)
++ [一些值得注意的点](#一些值得注意的点)
+
+我的[GitHub](https://github.com/wbcs/dream/blob/master/fe/js/function.md)，欢迎star
+
 # 函数的参数
-## arguments
-在非严格模式下，`arguments`对象和**实参**保持同步:
-```js
-function fn(a, b) {
-  console.log(a === arguments[0])
-  a = 'hehe'
-  console.log(a === arguments[1])
-}
-fn(1, 2)
-```
-> 结果都是true
-
-之所以给实参加粗，是因为即使保持同步，也只是和传入的参数保持一致，比如我如果没有传入`b`，然后我修改了`b`，这个时候`arguments[0]`和`b`是不一致的。
-
-但是在严格模式下，`arguments`和参数则不会保持同步。
-
 ## 默认参数
+使用了默认参数的函数，会自动启用ES6
 ```js
 function fn(a, b = 1) {
 
@@ -29,7 +28,7 @@ fn(1)
 + 默认参数可以是形参列表里的变量，但不可以是函数体内的变量哦。
 + 使用了默认参数，说明当前使用的`ES6`，所以当前`scope`都是处于`strict`模式下的。
 
-> 形参列表里的参数的`scope`和函数体内的`scope`是两个`scope`（书上是这么说的，但是他妈的如果是两个`scope`，那我重新用`let`声明为什么还报错，干.所以我觉得应该只是说形参列表的默认参数不能使用函数作用域内部的变量，但还是属于同一个`scope`，因为类似的`for`循环，括号里和花括号里是两个`scope`我就能用`let`重复声明）
+> 形参列表里的参数的`scope`和函数体内的`scope`是两个`scope`（书上是这么说的，但是他妈的如果是两个`scope`，那我重新用`let`声明为什么还报错？干！所以我觉得应该只是说形参列表的默认参数不能使用函数作用域内部的变量，但还是属于`同一个scope`，因为类似的`for`循环，括号里和花括号里是两个`scope`我就能用`let`重复声明）
 
 ## 默认参数对arguments的影响
 记住一点，严格模式下`arguments`只和传入的实参一样，而且不保证同步。
@@ -58,6 +57,22 @@ function fn(a, ...args) {
 + `fn.length`则是命名参数的个数，也就是说`fn`的`length`属性是不包括`args`中的东东的
 
 > 其实在`ES4`的草案中，`arguments`对象是会被不定参数给干掉的，不过`ES4`搁置以后，等到`ES6`出来，它很`ES4`的区别是保留了`arguments`对象
+
+## arguments
+在非严格模式下，`arguments`对象和**实参**保持同步:
+```js
+function fn(a, b) {
+  console.log(a === arguments[0])
+  a = 'hehe'
+  console.log(a === arguments[1])
+}
+fn(1, 2)
+```
+> 结果都是true
+
+之所以给实参加粗，是因为即使保持同步，也只是和传入的参数保持一致，比如我如果没有传入`b`，然后我修改了`b`，这个时候`arguments[0]`和`b`是不一致的。
+
+但是在严格模式下，`arguments`和参数则不会保持同步。
 
 # 箭头函数
 与普通函数的区别：
@@ -156,9 +171,9 @@ function throttle(fn, time, immediate = false) {
 + 在函数内部，必须是最后一条语句
 + 尾调用的结果作为返回值返回
 ```js
-function fn() {
+function fn1() {
   // 其他语句
-  return fn()
+  return fn2()
 }
 ```
 
@@ -255,3 +270,8 @@ obj.test = function() {
 }
 obj.test()
 ```
+
+# 最后
+我的[GitHub](https://github.com/wbcs/dream/blob/master/fe/js/function.md)，欢迎star.
+
+发现错误，欢迎在评论里指出😆。

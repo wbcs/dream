@@ -1,6 +1,3 @@
-# todo
-- [ ] OS进程通信
-- [ ] redux(redux-saga, redux-observable)
-- [ ] rxjs
-- [ ] proxy(reactive)
-- [ ] serverless
+# log
++ 嵌入式sdk，scope原则
++ 
