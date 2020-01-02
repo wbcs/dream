@@ -1,0 +1,2 @@
++ side effect => 如果打到一个bundle，那这个lib注定与Tree-shaking无缘：
+所以目前的组件库都是一个组件打成一个目录/文件。那这样就不能{a,bc}这样子引入了。 目前有main、module两个package.json字段，指定入口，由入口去一个个引入，然后再export出来。美滋滋。但是webpack目前不支持导出es module。所以打包最好用rollup咯
