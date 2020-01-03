@@ -1,14 +1,16 @@
-
-interface Person {
-  age: number
-}
-interface Person {
-  name: string
+interface Action<T> {
+  payload?: T
+  type: string
 }
 
-type A = Person
+interface Module {
+  count: number;
+  message: string;
+  asyncMethod<T, U>(input: Promise<T>): Promise<Action<U>>;
+  syncMethod<T, U>(action: Action<T>): Action<U>;
+}
 
-const obj: Person = {
-  age: 1,
-  name: ''
+type Result = {
+  asyncMethod<T, U>(input: T): Action<U>;
+  syncMethod<T, U>(action: T): Action<U>;
 }

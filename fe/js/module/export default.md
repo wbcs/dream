@@ -51,3 +51,4 @@ function fn(mod) {
 总结一下，就是在不是 `esModule` 的情况下, `esModuleInterop: true` ，会认为 `module.exports` 为默认导出同时也是 `ImportNameSpace` ， `false` 则会严格的认为 `module.exports.default` 为默认导出, `module.exports` 是 `ImportNameSpace` 。
 
 > 可以看到，如果原来 `module.exports` 中存在 `default` 在 `ImportNameSpace` 的情况下会被覆盖掉，这也是为什么不推荐存成员导出和默认导出共存的原因。
+
