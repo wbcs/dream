@@ -24,12 +24,16 @@ const obj = { name: 'wbcs' }
 type TVar = typeof obj
 // 等同于
 type TVar = {
-    name: string
+  name: string
 }
 ```
++ 鼠标移到alias上会显示字面量，而interface则只是显示interface的名字：
+
+![](./assets/type.png)
+![](./assets/interface.png)
 
 # interface可，type不可
-声明合并：
++ 声明合并：
 ```ts
 interface Person {
   age: number

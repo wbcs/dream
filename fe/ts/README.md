@@ -21,3 +21,49 @@
 其次，阅读代码的时候，一看就知道某个obj里有哪些key，对于数据结构的展示非常清晰。非常方便维护。
 
 在一个对于代码编辑器的提示也有很大提升，很多情况下都不需要去查阅文档，编辑器就会把对应的属性、API显示出来，灰常方便。
+
+# tips
+## interface
++ 对象字面的额外属性检查：
+```ts
+interface ITest {
+  age: number
+}
+function fn(arg: ITest) {
+  // ,,,,
+}
+fn({
+  age: 1,
+  name: 'wb'  // 报错
+})
+const obj = {
+  age: 1,
+  name: 'wb'
+}
+fn(obj) // okay
+```
+> 为了防止拼写错误，ts会对对象字面量特殊对待，会经过除interface外的额外属性检查。
+
++ Record：
+```ts
+interface ITest {
+  [key: string]: string
+  [key: number]: number // 出错
+}
+```
+> JavaScript的number索引会被转换成string，所以number的返回值必须是string返回值的子集才行。
+
++ implements: implements一个interface的时候，ts只会对class的实力部分检测。
+```ts
+interface Test {
+  age: number
+  getAge: () => number
+}
+class Person implements Test {
+  age: number
+  constructor() {}
+  getAge() {
+    return this.age // error
+  }
+}
+```
