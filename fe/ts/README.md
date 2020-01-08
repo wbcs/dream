@@ -67,3 +67,13 @@ class Person implements Test {
   }
 }
 ```
++ namespace:
+当namespace和class、function、enum重名时，可以认为namespace中导出的成员直接加在class、function、enum中
+```ts
+function fn() {}
+fn.abc // undefined
+namespace fn {
+  export const abc = 123
+}
+fn.abc // 123
+```
