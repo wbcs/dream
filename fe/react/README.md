@@ -74,3 +74,6 @@ const Container: React.FC<IProps> = ({ show, children }) => {
 + 合成事件：优点很多，不细说了。主要的缺点有两个：
   + 代码量增大， `React` 将近一半的代码都是自定义事件系统的
   + 合成事件和原生事件并存造成一定的混乱
+
+
+# temp
