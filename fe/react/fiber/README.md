@@ -19,3 +19,4 @@ Fiber是React16引入的新的调度算法。fiber是实现这个调度算法中
 ## 名词解释
 + Reconciliation：diff，对new tree和old tree进行比较
 + scheduling：什么时候去做这件事情
++ hydrate: 注水，意思就是补齐React在SSR的时候缺少的【行为】，因为在SSR的时候得到的无非是一堆string，没有绑定对应的事件。hydrate就是要在client补齐这些。
