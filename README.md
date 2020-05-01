@@ -1,16 +1,18 @@
 # 体系
 大概的学习体系
-主要
-+ 前端
-+ 数据结构
-+ 操作系统
-+ 计算机网络
+
+深入:
++ fe
++ data structure
++ OS
++ Internet
 + Linux环境编程
-+ 设计模式
-+ 工程化
-  + 代码规范
++ design pattern
+  + singleton
++ engineering
+  + code standards
   + git
-  + 版本控制
+  + version control: 目前只了解 semver
 
 了解：
 + 数据库
