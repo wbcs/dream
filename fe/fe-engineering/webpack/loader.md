@@ -105,5 +105,13 @@ module.exports.patch = function(request) {
 ```
 在文件名前加 `!!` 的意思就是忽略 `当前loader` 配置， 因为 `webpack config` 中配置了在引入 `css` 文件的时候执行对应的 `loader` ，在执行当前 `loader` 的时候又引入了 `css` 会造成无限递归。
 
+这样一个能用的`style-loader`就ok了，不过真正的`style-loader`还有一些 `options` ，比如:
++ style标签往哪里插入(insert) 默认head
++ css的代码往哪个标签里添加(injectType) 默认styleTag
++ 对HMR的支持
++ 对options的检测呀等等
+
+不过核心部分就是我们写的啦~
+
 # css-loader
 @TODO
