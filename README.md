@@ -24,3 +24,4 @@
 + [Dan](https://overreacted.io/)
 + [Google](https://developers.google.com/web/updates/capabilities)
 + [淘系](https://fed.taobao.org/)
++ [V8](https://v8.dev/)
