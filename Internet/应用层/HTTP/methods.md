@@ -56,3 +56,9 @@ GET和POST的区别，本质上是语义也就是**规范**上的对比，而不
 + [HTTP协议中GET和POST方法的区别](https://sunshinevvv.coding.me/blog/2017/02/09/HttpGETv.s.POST/)
 
 
+# POST,PUT,PATCH
++ post用来创建数据：`/api/articles/`，它的语言是在整个 articles 这个数据集下创建一个新的，因此多次调用post会多次创建新数据。因此post是非幂等的
++ put用来更新数据：`/api/articles/:id`，它的语义是对id的article进行更新，或者说我们把一个数据（完整的）直接放(put)到articles这个集合中, 这个新数据和id是一一对应的，也就是put是幂等的
++ patch用来局部更新数据：它和put更像，只不过放到articles的数据只是一部分而已，我们用这个部分新数据对已存在的某个元素进行更新。不过patch是非幂等的，因为put是直接用上传的资源去替换原有的资源，而patch则是描述了服务器应当如何去更新的指令，多次调用有可能会影响其他资源的变更，因此patch是非幂等的。
+
+> 我们直说语言上的区别，什么技术上没区别的杠精别bB cnm。
