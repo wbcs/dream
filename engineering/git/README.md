@@ -2,7 +2,8 @@
 
 # .git
 `git init` 后：
-![](./assets/tree.png)
+
+<img src="./assets/tree.png" width="300" />
 
 + config 文件包含项目特有的配置选项
 + description 供 GitWeb 使用，无需关心
