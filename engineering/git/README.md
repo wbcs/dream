@@ -58,4 +58,5 @@ git cat-file -p ID
 100644 blob c2ab50ce068811a0dfa0c2db1e3ea8a6c68951eb    cat-file.png
 100644 blob 040127493f73de7afe19079793d148730f7bc08d    tree.png
 ```
-![](./assets/tree-object.png)
+<img width="300" src="./assets/tree-object.png" />
+
