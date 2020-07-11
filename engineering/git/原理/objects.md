@@ -161,6 +161,15 @@ Date:   Mon Jul 6 23:41:19 2020 +0800
     first
 ```
 
+# tag object
+tag 是一种和 commit 十分类似的对象。
+object|存储信息|区别
+-|-|-
+commit|父commit,tree,提交时间,注释,提交者|指针指向tree
+tag|commit,时间,注释,创建者|指针指向commit
+
+它像是一个永不移动的分支引用——永远指向同一个提交对象，只不过给这个提交对象加上一个更友好的名字罢了。
+
 # 对象存储
 接下来看看一个对象是如何被存储的，上面提到 hash 是根据一个 header 和内容一起做 `SHA-1` 检验和得到的，先来看看这个 header 是什么吧：
 ```ruby
