@@ -86,8 +86,11 @@ test tag
 `Git` 将这些远程引用作为记录远程服务器上各分支最后已知位置状态的书签来管理。
 
 # 总结
-好了，现在知道 Git 的 branch、tag 的本质了：
+好了，现在知道 `Git` 的 branch、tag 的本质了：
 + 分支本身其实就是表示处于不同状态下的快照 也就是对应的 commit， `refs/heads/xxx` 即表示分支 xxx，其中存储着对应 commit 的 hash。
 + 标签的本质其实就是一个永远不变的分支，意味着它始终停留在当初的 commit 处，一般具有重大标志的 commit 会被打上相应的 tag。
 + HEAD 则存储着我们目前所处的分支。
 + 除了本地分支外，我们的远程分支则被存储在 `refs/remotes/heads/` 中，和本地分支不同的是，远程分支不能通过 commit 来更新其最新指向的 commit，它是只读的。
+
+学到的底层命令：
++ `git update-ref refs/heads/xxx $HASH_OF_COMMIT` 修改引用的内容
