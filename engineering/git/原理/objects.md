@@ -2,7 +2,7 @@
 git 在存储我们项目的各个版本时，在内部是根据不同的对象进行存储的：
 + blob object 保存数据内容
 + tree object 保存目录结果信息
-+ commit object 保存作者/提交者、提交时间、提交注释等信心
++ commit object 保存作者/提交者、提交时间、提交注释等信息
 
 > 这些对象都是存储于 `.git/objects` 下。
 
