@@ -38,7 +38,6 @@
 ➜ git update-ref refs/heads/master $HASH_OF_COMMIT_TREE
 ```
 
-
 # HEAD
 HEAD (`.git/HEAD`)文件通常是一个符号引用（symbolic reference），指向目前所在的分支。
 
@@ -59,8 +58,23 @@ refs: refs/heads/dev
 
 
 # 标签引用
-@TODO
+标签本质和分支一样，也就是说可以使用 `git update-ref` 来创建一个tag：
+```sh
+➜ git update-ref refs/tags/my-tag $HASH_OF_COMMIT
+```
+这就是**轻量标签**的全部内容————一个固定的引用。
 
+附注标签略有不同，创建一个附注标签 `Git` 会创建一个 tag object, 而不是直接指向一个 commit object。
+```sh
+➜ git tag -a wb-tag -m "test tag" | git cat-file -p
+object c5bcc0a741ad9ec2a3ee7d55525f520fb838d584
+type commit
+tag wb-tag
+tagger wbcs <421768544@qq.com> 1594639846 +0800
+
+test tag
+```
+标签对象并非必须指向某个提交对象，以对任意类型的 `Git` 对象打标签。
 
 # remote
 在添加远程仓库并向其推送后， `Git` 会记录下每一个分支对应的 commit ，并保存在 `refs/remote/` 下。
@@ -72,3 +86,8 @@ refs: refs/heads/dev
 `Git` 将这些远程引用作为记录远程服务器上各分支最后已知位置状态的书签来管理。
 
 # 总结
+好了，现在知道 Git 的 branch、tag 的本质了：
++ 分支本身其实就是表示处于不同状态下的快照 也就是对应的 commit， `refs/heads/xxx` 即表示分支 xxx，其中存储着对应 commit 的 hash。
++ 标签的本质其实就是一个永远不变的分支，意味着它始终停留在当初的 commit 处，一般具有重大标志的 commit 会被打上相应的 tag。
++ HEAD 则存储着我们目前所处的分支。
++ 除了本地分支外，我们的远程分支则被存储在 `refs/remotes/heads/` 中，和本地分支不同的是，远程分支不能通过 commit 来更新其最新指向的 commit，它是只读的。
