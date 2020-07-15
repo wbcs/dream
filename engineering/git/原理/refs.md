@@ -85,6 +85,40 @@ test tag
 
 `Git` 将这些远程引用作为记录远程服务器上各分支最后已知位置状态的书签来管理。
 
+# 引用规范
+我们在将本地仓库和远程仓库进行关联的时候：
+```sh
+➜ git add remote origin $REMOTE_GIT
+```
+在 config 文件中会增加一个小节，这个小节中的 `fetch` 被称为 **引用规范(refspec)**, 它是用于获取操作的：
+```
+[remote "origin"]
+	url = https://github.com/wbcs/dream.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+```
+在执行 `git fetch` 时拉取远程的 `refs/heads/*` 分支（*代表所有），保存至 `refs/remotes/origin/` 下。
+> `+` 号告诉 `Git` 即使在不能快进的情况下也要（强制）更新引用。 `xx/*` 在这里只是 namespace 并不是一个 pattern
+
+引用规范: `fetch = <src>:<dist>`, `push = <src>:<dist>`
+
+如果想在 `git fetch` 时只获取某个分支，而不是所有，可以修改 fetch 字段为 `+refs/heads/master:refs/remotes/oorigin/`
+
+基于这样的功能，就能够实现多个团队能同时存在同名分支，并且不存在命名冲突了，自动推送至相应的 `namespace` 下：
+```
+[remote "origin"]
+	url = https://github.com/wbcs/dream.git
+  fetch = +refs/heads/*:refs/remotes/origin/wb/*
+  push = refs/heads/master:refs/origin/wb/master
+```
+这样我们所有本地分支都会被推送到 wb 这个 `namespace` 下了，当然获取也是从这个 `namespace` 下获取。
+
+当然，也可以在命令行中执行：
+```sh
+➜ git fetch origin master:refs/origin/remotes/wb/master
+➜ git push origin master:refs/origin/wb/master
+```
+> 所以 `git push origin :branch_name` 可以删除分支其实就是把被 push 的分支写为空，然后推送到 remote。 远程对应的分支就被置空了，也就是被删掉了。
+
 # 总结
 好了，现在知道 `Git` 的 branch、tag 的本质了：
 + 分支本身其实就是表示处于不同状态下的快照 也就是对应的 commit， `refs/heads/xxx` 即表示分支 xxx，其中存储着对应 commit 的 hash。
