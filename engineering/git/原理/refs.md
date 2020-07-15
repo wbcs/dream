@@ -94,3 +94,4 @@ test tag
 
 学到的底层命令：
 + `git update-ref refs/heads/xxx $HASH_OF_COMMIT` 修改引用的内容
++ `git symbolic-ref HEAD refs/heads/xxx` 修改当前分支为 xxx
