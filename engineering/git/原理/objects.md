@@ -1,7 +1,7 @@
 # objects
 git 在存储我们项目的各个版本时，在内部是根据不同的对象进行存储的：
 + blob object 保存数据内容
-+ tree object 保存目录结果信息
++ tree object 保存目录结构信息
 + commit object 保存作者/提交者、提交时间、提交注释等信息
 + tag object 保存附注标签时会创建 tag object，它的内容和 commit object 很类似
 
@@ -229,8 +229,8 @@ fuck you.%
 
 # 总结
 通过对 Git 中的各种 objects 的学习，我学会了 Git 是如何实现对整个 git repository 进行版本存储的：
-+ `git add` 的时候，将文件的内容存储为 blob，文件之间的结构存储为 tree，并更新 index
-+ `git commit` 的时候，将我们 index 内的 tree 进行提交，将当前的 **tree、提交时间、提交人以及提交注释** 都存储在 commit object 中
++ `git add` 的时候，将文件的内容存储为 blob，并更新 index
++ `git commit` 的时候，`Git` 把文件之间的结构存储为 tree， 然后将我们 index 内的 tree 进行提交，将当前的 **tree、提交时间、提交人以及提交注释** 都存储在 commit object 中
 
 当我们想要回滚的时候，只需要查看 log ，根据我们当初的提交注释找到对应的 commit object。<br />
 然后将这个 commit object 的 hash 交给 git（比如 git reset --hard $HASH）。<br />
