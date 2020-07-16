@@ -108,14 +108,14 @@ test tag
 [remote "origin"]
 	url = https://github.com/wbcs/dream.git
   fetch = +refs/heads/*:refs/remotes/origin/wb/*
-  push = refs/heads/master:refs/origin/wb/master
+  push = refs/heads/master:refs/heads/wb/master
 ```
 这样我们所有本地分支都会被推送到 wb 这个 `namespace` 下了，当然获取也是从这个 `namespace` 下获取。
 
 当然，也可以在命令行中执行：
 ```sh
 ➜ git fetch origin master:refs/origin/remotes/wb/master
-➜ git push origin master:refs/origin/wb/master
+➜ git push origin master:refs/heads/wb/master
 ```
 > 所以 `git push origin :branch_name` 可以删除分支其实就是把被 push 的分支写为空，然后推送到 remote。 远程对应的分支就被置空了，也就是被删掉了。
 
