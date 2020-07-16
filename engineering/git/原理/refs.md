@@ -119,6 +119,13 @@ test tag
 ```
 > 所以 `git push origin :branch_name` 可以删除分支其实就是把被 push 的分支写为空，然后推送到 remote。 远程对应的分支就被置空了，也就是被删掉了。
 
+妈妈再也不用担心我的分支命名冲突啦😆：
+```
+	fetch = +refs/heads/*:refs/remotes/origin/*
+	fetch = +refs/heads/wb/*:refs/remotes/origin/*
+	push = refs/heads/master:refs/heads/master
+	push = refs/heads/*:refs/heads/wb/*
+```
 # 总结
 好了，现在知道 `Git` 的 branch、tag 的本质了：
 + 分支本身其实就是表示处于不同状态下的快照 也就是对应的 commit， `refs/heads/xxx` 即表示分支 xxx，其中存储着对应 commit 的 hash。
