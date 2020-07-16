@@ -10,7 +10,7 @@
 + hooks 目录包含客户端或服务端的 `hook scripts`
 + info 目录包含一个全局性排除（global exclude）文件， 用以放置那些不希望被记录在 `.gitignore` 文件中的 ignored patterns
 
-其他的都是 git 核心组成部分：
+其他的都是 `Git` 核心组成部分：
 + HEAD 指向目前被检出的分支
 + objects 存储所有的数据内容
 + refs 存储指向数据（分支、远程仓库和标签等）的提交对象的指针
