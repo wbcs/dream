@@ -81,7 +81,7 @@ test tag
 
 比如我们通常以 origin 作为远程仓库名，在执行 `git push origin master` 后，可以发现 `refs/remotes/origin/master` 中的内容便是我们最新一次的 commit，也就是和 `refs/heads/master` 一样。
 
-本地和远程引用/分支的区别在于，remote 是**只读的**。可以 checkout 到远程引用，但是 HEAD 不会更改，所以不能直接通过修改后commit来更新远程分支。
+本地和远程引用/分支的区别在于，remote 是**只读的**。可以 checkout 到远程引用，这个时候 Git 会自动创建 拷贝 `refs/remotes/origin/xxx` 到 `refs/heads/xxx`, 所以不能直接通过修改后commit来更新远程分支。
 
 `Git` 将这些远程引用作为记录远程服务器上各分支最后已知位置状态的书签来管理。
 
@@ -101,7 +101,7 @@ test tag
 
 引用规范: `fetch = <src>:<dist>`, `push = <src>:<dist>`
 
-如果想在 `git fetch` 时只获取某个分支，而不是所有，可以修改 fetch 字段为 `+refs/heads/master:refs/remotes/oorigin/`
+如果想在 `git fetch` 时只获取某个分支，而不是所有，可以修改 fetch 字段为 `+refs/heads/master:refs/remotes/origin/`
 
 基于这样的功能，就能够实现多个团队能同时存在同名分支，并且不存在命名冲突了，自动推送至相应的 `namespace` 下：
 ```
