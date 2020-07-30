@@ -6,4 +6,6 @@
   + 打包生成handler函数，体积比较大
   + 不易于tree-shaking
 
-#  
+# use
++ useEffect 是异步的微任务  比 setTimeout快没Promise快
++ useLayoutEffect 是同步的， render 完就会调用
