@@ -4,7 +4,7 @@
 因为每次 `git add` Git 都会当做是全新的数据进行压缩存储的，所以会比较耗费空间。那为什么我们不把公共部分记录下来，然后只记录差异不就可以了吗？ok，pack就是干这个的。
 
 # git gc
-执行完 `git gc` 后，我们发现 在 `objects/pack/` 下多了 `pack-$HASH.idx` 和 ``pack-$HASH.pack` 两种类型的文件。而且objects 下的文件变少了，消失的都是被 commit 直接或间接引用了的文件，剩余的则是没有被任何的 commit 所引用的，这种文件被称为**悬空的**。
+执行完 `git gc` 后，我们发现 在 `objects/pack/` 下多了 `pack-$HASH.idx` 和 `pack-$HASH.pack` 两种类型的文件。而且objects 下的文件变少了，消失的都是被 commit 直接或间接引用了的文件，剩余的则是没有被任何的 commit 所引用的，这种文件被称为**悬空的**。
 
 这个命令把 `Git objects` 进行了打包，`.pack` 存储着打包后的内容， `.idx` 记录着原来文件在 `.pack` 中的偏移位置。
 
@@ -13,6 +13,7 @@
 # git verify-pack
 通过 `git verify-pack` 这个底层命令可以让你查看已打包的内容：
 ```sh
+# hash                                   类型   在包文件中占的大小
 ➜ git verify-pack -v .git/objects/pack/pack-ee37aa481b846ae691e8d7d6fcef2097774982a2.idx
 1867ebb2af5c91844aa152d505b3c72d09f76998 commit 184 119 12
 2b6da1524cfe5266e6f67789683c012515c95437 blob   4 13 131
