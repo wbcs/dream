@@ -2,9 +2,9 @@
 ```py
 # app.py
 def application(environ, start_response):
-  start_response('200 OK', [('Content-Type', 'text/html')])
-  body = '<h1>Hello World!</h1>'
-  return [body.encode('utf-8')]
+    start_response('200 OK', [('Content-Type', 'text/html')])
+    body = '<h1>Hello World!</h1>'
+    return [body.encode('utf-8')]
 # server.py
 from wsgiref.simple_server import make_server
 from app import application
@@ -21,3 +21,50 @@ server.serve_forever()
 
 ## string
 py3中的string默认是使用Unicode编码，所以一个字符对应的是多个byte。计算机在处理字符的时候，在内存里都会把字符转换成Unicode。
+
+# tips
+
++ 日期转换：
+```py
+from datetime import datetime
+# str parse to time
+date_str = '2020 08/04 11:04:45'
+format_str = '%Y %m/%d %H:%M:%S'
+date_time = datetime.strptime(date_str, format_str)
+
+# time format to str
+
+```
+> datetime 可以直接进行比较，加减运算
+
++ 日期偏移：
+```py
+from datetime import timedelta
+
+forward_days = 3
+delta = timedelta(days=forward_days)
+forward_days_later = datetime.now() + delta
+
+# 还支持这些：
+class timedalta:
+    def __init__(self, days: float = ..., seconds: float = ..., microseconds: float = ...,
+                milliseconds: float = ..., minutes: float = ..., hours: float = ...,
+                weeks: float = ...) -> None: ...
+```
+
++ 时间戳
+
+```py
+import time
+from datetime import datetime
+dt = datetime(year, month, day)
+# 对于python3：
+timestamp = dt.timestamp()
+
+# 对于python2：
+date_time = datetime(year, month, day)
+timestamp = time.mktime(date_time.timetuple())
+
+# 转回去
+datetime.fromtimestamp(timestamp)
+```
