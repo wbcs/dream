@@ -1,9 +1,18 @@
+# 修改record
+```sql
+UPDATE `table_name`
+SET column1=value1,column2=value2,...
+WHERE some_column=some_value;
+```
+
 # table 本身
 ## column
 新增：
 ```sql
--- 在 some_column 后 添加一列 column_name，类型是 int
-ALTER TABLE `table_name` ADD COLUMN `cloumn_name` int NOT NULL DEFAULT '0' COMMENT '' AFTER `some_column`;
+ALTER TABLE `table_name`
+ADD `column_name` VARCHAR(10) NOT NULL DEFAULT '' COMMENT ''
+[, ADD `column_name` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '']
+[AFTER `other_column`];
 ```
 
 修改：
