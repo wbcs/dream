@@ -57,12 +57,21 @@ Hello World
 
 
 ## Dockerfile
-```
-from $image
-run cmd \
-  && cmd
-  && cmd ...
-```
++ FROM: 定制image基于的镜像
++ RUN: 进入image生成的容器后执行的shell `RUN echo 'hehe'` 等价于 `RUN ['echo', 'hehe']`
++ 为了避免每次执行一条语句就生成一层image，可以：
+  ```dockerfile
+  FROM $image
+  RUN cmd && cmd && cmd ...
+  ```
++ docker build -t imageName:tag . 会从当前目录 `.` 中的 Dockerfile 生成一个镜像，新的镜像名称就是 imageName, tag 是 tag
+  > `.` docker会将这个路径下的所有文件打包，发送到docker engine，这个过程无法直接使用本机文件，所以需要打包后提供给docker engine。所以在上下文路径下不要存放无用的文件。
++ COPY: `COPY [--chown=<user>:<group>] src dist` 从上下文路径的src复制文件/目录到容器的dist
++ CMD: 和RUN类似，只是执行时机不同，RUN是在docker build的时候执行，CMD则是在container执行的时候执行。一般用作为启动的container执行默认要运行的程序，可被 `docker run` 的参数覆盖.
+  > 一个Dockerfile存在多个CMD时，只有最后一条会生效
++ ENTRYPOINT: 类似CMD，但不会被 docker run 的参数覆盖
++ ENV: `ENV NODE_ENV 'development'`, 后续可以直接使用 `$NODE_ENV`
+
 
 ### 连接
 + 端口连接：
@@ -83,5 +92,4 @@ docker login
 docker pull namespace/repository-name:tag
 # docker logout
 ```
-
-![](./assets/docker.webp)
+<img width="700" src="./assets/docker.webp" />
