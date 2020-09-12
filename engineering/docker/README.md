@@ -83,13 +83,30 @@ Hello World
 ```
 > 查看某个 container 中 5000 端口对应本机的端口： `docker port $NAME_OR_HASH 5000`.
 
-+ container 互连：@TODO
++ container 互连：
+流程大概就是：先创建一个docker网络，然后将各个容器加入到这个网络当中，处于同一个docker network 的容器能够互连。
+```
+➜ docker network create -d bridge network-name
+➜ docker run -itd --name container0 --network network-name $image /bin/sh
+➜ docker run -itd --name container1 --network network-name $image /bin/sh
+进入container0
+# ping container1
+...
+```
 
 
 # docker hub
 ```sh
 docker login
 docker pull namespace/repository-name:tag
+docker run -it $IMAGE /bin/sh
+apt-get update
+exit
+docker commit -m="" -a="" $container namespace/repository
+docker push namespace/repository
 # docker logout
 ```
 <img width="700" src="./assets/docker.webp" />
+
+# 问题
++ 既然已经有MySQL、node等镜像了，我能不能把它们组合一下，让我的应用可以同时使用多种服务呢？
