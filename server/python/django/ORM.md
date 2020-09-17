@@ -50,6 +50,11 @@ class Book(models.Model):
 class Store(models.Model):
     name = models.CharField(max_length=300)
     book = models.ManyToManyField(Book)
+    
+# city必须在SQL层面是author的foreign key，其他一样
+# ALTER TABLE `author` 
+# ADD FOREIGN KEY (city_id)
+# REFERENCES city(id);
 ```
 select_related:
 ```py
@@ -76,7 +81,7 @@ for s in store_queryset:
 
 store_queryset = Store.objects.all()
 for s in store_queryset:
-    # 每次都是事实查询
+    # 每次都是实时查询
     print(s.books.all())
 ```
 prefetch_related 做了两次 query:
