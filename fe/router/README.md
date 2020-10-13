@@ -22,3 +22,6 @@ Vue:
 + `<Route>`: 渲染匹配 URL 时的视图，并传递
 
 > 视图的state都交给history处理了，router 库本身并没有处理。
+
+# history
+@TODO hash下的状态怎么存储？
