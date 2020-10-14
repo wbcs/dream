@@ -6,7 +6,7 @@ React:
 Vue:
 + vue-router
 
-# React 系列
+# React 系
 ## react-router-dom
 
 + `<BrowserRouter>`：使用 `createBrowserHistory` 创建 `history` 传递给 `react-router` 的 `<Router>`(`HashRouter`、`MemoryRouter` 同理)
@@ -34,11 +34,10 @@ Vue:
 
 > 视图的 state 都交给 history（不是原生那个API） 处理了，router 库本身并没有处理。
 
-
-# history
+## history
 history 是 react-router 保证 state 和 URL 同步的核心。
 
-## native history
+### BrowserRouter
 原生的 history 改变 URL 有以下几种方法：
 + history.go
 + history.back
@@ -54,4 +53,8 @@ history 是 react-router 保证 state 和 URL 同步的核心。
 
 针对第二个问题，可以通过 hack 手段，对原生的 `pushState、replaceState` 做一次 wrap，在 wrap 里触发一些自定义事件即可（不过 react-router 没有这么做，那他是怎么做的？`react-router居然直接忽略！！！，用原生的pushState、replaceState居然不会引起view更新`）。
 
-@TODO hash下的状态怎么存储？
+### HashRouter
+hash 模式下的 state 是存储在内存中的，所以刷新页面后state 会丢失。不过最新的*v5.x*，内部实现hash的时候，依然采用了 `window.history.pushState`, 只是第三个参数是类似 `#/xxx`，这样刷新页面就和 `BrowserRouter` 一样不会丢失了(当然，目前最新的 `react-router-dom` 还没有迁移到最新的 history)。
+
+### MemoryRouter
+浏览器前进后退没法用，一般不用（RN可能有用？）暂时不管这个。
