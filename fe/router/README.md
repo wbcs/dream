@@ -13,21 +13,14 @@ Vue:
 
 ## react-router-dom
 
-- `<BrowserRouter>`：使用 `createBrowserHistory` 创建 `history` 传递给 `react-router` 的 `<Router>`(`HashRouter`、`MemoryRouter` 同理)
+
 - `<Link>`：最终渲染的真实元素是 `<a>`, 对 `onClick` 做了一层代理：
   1. 忽略除鼠标左键以外的其他任何 click
   2. 组合点击（功能键 + 鼠标）则不做 navigate
   3. 让浏览器处理类似 `<a target="_blank" />`(除 \_self)
      除此之外，
 - `<NavLink>`: 使用了 `<Link>` 支持对 active 的导航元素设置样式, 可以理解为定制版的 `<Link>`
-
 - `<BrowserRouter>`：使用 `createBrowserHistory` 创建 `history` 传递给 `react-router` 的 `<Router>`(`HashRouter`、`MemoryRouter` 同理)
-- `<Link>`：最终渲染的真实元素是 `<a>`, 对 onClick 做了一层代理，以下 action 会交由浏览器去处理：
-  1. 鼠标左键以外的其他任何 click
-  2. 组合点击（功能键 + 鼠标）
-  3. 类似 `<a target="_blank" />`(除 \_self)
-- `<NavLink>`: 使用了 `<Link>` 支持对 active 的导航元素设置样式, 可以理解为定制版的 `<Link>`
-
 > 所以用 `<Link>` 和 `<a>` 的区别就在于，前者是调用 history 这个 **库（not native API）** 的 API 来做跳转， 后者是直接依赖浏览器默认行为做的跳转。
 
 ## react-router
