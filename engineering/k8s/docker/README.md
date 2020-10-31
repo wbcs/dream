@@ -48,7 +48,7 @@ Hello World
 + 进入：
   + `docker attach $NAME_OR_HASH` 退出container也会停止
   + `docker exec [-options] $NAME_OR_HASH $CMD` 退出container不会停止
-+ 删除：`docker rm -rf $NAME_OR_HASH`
++ 删除：`docker rm -f $NAME_OR_HASH`
 + clear：`docker container prune` (只会干掉处于Exited的容器)
 + 查看container日志：`docker logs -f $NAME_OR_HASH`
 + 查看container内部运行的进程：`docker top $NAME_OR_HASH`
