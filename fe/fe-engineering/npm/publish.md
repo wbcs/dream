@@ -4,6 +4,6 @@
 
 # tag
 - `npm install @namespace/package` 默认下载 tag 为 latest.
-- `npm dist-tag add @namespace/package:version your-fucking-tag`
+- `npm dist-tag add @namespace/package@version your-fucking-tag`
 - `npm dist-tag ls` 查看所有的 tag
 
