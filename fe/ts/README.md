@@ -1,3 +1,21 @@
+# typescript 基本类型
+- number
+- string
+- boolean
+- null
+- undefined
+- symbol
+- bigint
+- object
+- unknown
+- any
+- void
+- never
+- Enum
+- Array
+- Tuple
+
+
 # typescript比JavaScript多了什么？
 + 为 `JavaScript` 添加了类型
 + 提供未来版本的语法到当前js引擎的功能
