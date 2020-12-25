@@ -112,3 +112,35 @@ Zookeeper 的结构是一棵树，它的结点被称为 znode, znode 又分为�
   + producer =>(sync) topic.paritition.leader
   + producer return
   + broker.partition.leader =>(async) partittion.replica
+
+
+# 为什么吞吐量大、速度快？
+## 1. 顺序读写
+kafka 的数据是存储的disk上的，根据对disk/memory访问时，顺序读写更高效的特性。kafka 将数据之间append到文件中。
+> disk 顺序读写 比 memory随机读写 还要快。
+
+## 2. page cache
+直接利用OS的分页，不自身做分页缓存（自身对象内存效果更大、并且可能会引起频繁地GC）
+
+## 3. sendfile
+通常的数据发送流程：
+  1. OS读取disk数据 => 内核空间读缓冲区
+  2. 从内核空间读缓冲区 => 用户缓冲区
+  3. 用户缓冲区 => 内核空间的socket缓冲区
+  4. 内核空间的socket缓冲区 => NIC(Network Interface Card)
+
+kafka 少了2，3：
+  1. OS读取disk数据 => 内核空间读缓冲区
+  2. 内核空间的socket缓冲区 => NIC(Network Interface Card)
+
+## 4. 分区分段 + 索引
+基于数据的顺序存储，又可以进行索引 + 分页（段）优化（MySQL就是采用了这样的优化）。
+
+kafka 根据 topic 将信息分类存储到对应的 broker，每个broker又会有多个分区（将数据分散，可供多个consumer同时消费）。
+
+每个 consumer 根据 offset 查找数据时，就能够利用索引进行更快的查找，进一步提高数据读取效率。
+
+## 5. batch flush/compress
+顾名思义批量的意思，业务方写入数据到 MQ 时并不会直接交给 broker ，而是会先暂存到 cache 中，等到 cache 中的数据达到 batch.size 或 linger_ms 后再 flush 到 broker.
+
+另外，对数据的压缩也是采用批量压缩的，数据越少，压缩效率就越低。
