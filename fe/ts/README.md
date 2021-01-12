@@ -95,3 +95,6 @@ namespace fn {
 }
 fn.abc // 123
 ```
+
+- 重载，实现part签名对外不可见
+- 
