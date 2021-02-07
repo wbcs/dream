@@ -1,11 +1,10 @@
 ```js
 function isPrimitive(value) {
-  const primitiveTypes = ['string', 'number', 'symbol', 'bigint', 'boolean', 'undefined', 'null']
-  const type = typeof value
-  if (primitiveTypes.includes(type)) {
-    return true
-  }
-  return value === null
+  return (
+    ['string', 'number', 'symbol', 'bigint', 'boolean', 'undefined'].includes(
+      typeof value
+    ) || value === null
+  )
 }
 
 class _WeakMap {
