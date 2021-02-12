@@ -17,8 +17,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "outDir": "static",
-    "resolveJsonModule": true,
-    "isolatedModules": true
+    "resolveJsonModule": true
   },
   "include": ["demo"]
 }
