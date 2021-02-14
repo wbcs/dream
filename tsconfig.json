@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "noImplicitAny": true,
-    "allowJs": true,
+    "noUnusedLocals": true,
+    "allowJs": false,
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
@@ -16,8 +18,8 @@
     "esModuleInterop": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "outDir": "static",
+    "outDir": "./dist",
     "resolveJsonModule": true
   },
-  "include": ["demo"]
+  "include": ["./demo"]
 }

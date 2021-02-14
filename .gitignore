@@ -1,3 +1,4 @@
-demo
+demo/
+dist/
 .vscode
 **/.DS_Store
