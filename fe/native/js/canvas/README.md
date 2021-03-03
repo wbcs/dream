@@ -17,3 +17,12 @@ canvas.toBlob(
   1
 )
 ```
+
+# API
+
+- moveTo
+- lineTo
+- beginPath
+- closePath
+- fill
+- stroke
