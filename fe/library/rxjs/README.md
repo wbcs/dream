@@ -16,10 +16,10 @@
 ## concept
 
 - observable
-- observer
+- observer: 一个拥有 `next`, `error`, `complete` 方法的对象
 - subscribe
 - subscriber
-- subscription
+- subscription: 一个拥有 `unsubscribe` 方法的对象
 
 以上概念之间的关系用代码来表示：
 
@@ -31,7 +31,10 @@ const observer = {
   complete() {},
 };
 const subscription = observable.subscribe(observer);
+subscription.unsubscribe();
 ```
+
+`subscription` 可以 `subscription.add(anotherSubscription)`，这样 `subscription.unsubscribe()` 就可以取消对多个 `observable` 的观察; 当然也可以 `subscription.remove(anotherSubscription)` 来执行 `undo` 。
 
 ## operators
 
@@ -48,10 +51,52 @@ const subscription = observable.subscribe(observer);
     - find
     - findIndex
     - every
-    - 
   - math
     - min
     - max
     - count
-    <!-- - scan
-  - throttle -->
+
+## subject
+
+subject 是特殊的 observable ，类似 EventEmitter 能够使同一个数据多播到多个 observable。
+
+```ts
+import { Subject, from } from 'rxjs';
+
+const subject = new Subject<number>();
+
+subject.subscribe((v) => console.log(`shit: ${v}`));
+subject.subscribe((v) => console.log(`fuck: ${v}`));
+
+subject.next(1);
+subject.next(2);
+
+// shit: 1
+// fuck: 1
+// shit: 2
+// fuck: 2
+```
+
+同时，subject 也是一个 observer。
+
+```ts
+import { Subject, from } from 'rxjs';
+
+const subject = new Subject<number>();
+
+subject.subscribe((v) => console.log(`shit: ${v}`));
+subject.subscribe((v) => console.log(`fuck: ${v}`));
+
+const observalbe = from([1, 2, 3]);
+observable.subscribe(subject);
+// shit: 1
+// fuck: 1
+// shit: 2
+// fuck: 2
+// shit: 3
+// fuck: 3
+```
+
+- BehaviorSubject: 被 `subscribe` 时，立即传递最新的值给 `observere`
+- ReplaySubject(bufferSize?: number, windowTime?: number, scheduler?: SchedulerLike): 重播在 `windowTime` 内的 `bufferSize` 个值
+- AsyncSubject: `observable.complete()` 后，发送给 `observer` 最后一次的值
