@@ -1,48 +1,20 @@
-# typescript 基本类型
-
-- number
-- string
-- boolean
-- null
-- undefined
-- symbol
-- bigint
-- object
-- unknown
-- any
-- void
-- never
-- Enum
-- Array
-- Tuple
-
-# typescript 比 JavaScript 多了什么？
-
-- 为 `JavaScript` 添加了类型
-- 提供未来版本的语法到当前 js 引擎的功能
-
-# 强类型、弱类型
-
-- 强类型、弱类型：类型转换是否需要显示区分。
-  - 前者需要显示声明，比如 `C/C++` 中 `int doubleToInt = (int)doubleNumber;`
-  - 后者则是隐含的，不需要显示声明，比如 `JavaScript` 中 `const num = str;`
-- 静态类型、动态类型：类型检查的时机不同。
-  - 前者在编译阶段完成，真正 `runtime` 的时候是不需要进行的；
-  - 后者则是在 `runtime` 的过程中不断去检查，会造成一定 `runtime` 性能损耗，这也是动态语言的通病。
-
-`typescript`对`JavaScript`的类型检查是静态的，也就是说真正 `runtime` 的时候引擎依然是需要动态检查类型的，对于 code 的 `runtime` 效率而言没有任何提高。
-
-# 为什么要使用 typescript？
-
-那为什么还要使用 ts 呢？它的意义何在？答案是静态类型更加有利于构建大型 project。
-
-静态类型又可以称为 `early fail` 。一旦 code 被键入，就能够在执行之前发现一些潜在的错误，比如不能读取 string 特有方法等等。这对于大型项目调试困难是很有帮助的，能够很快的发现潜在的威胁在哪里。因为人很难发现某些特殊情况下，自己写的这段代码并不适用，而静态类型检查能够很好的解决这个问题。这是 `typescript` 最大的价值。
-
-其次，阅读代码的时候，一看就知道某个 obj 里有哪些 key，对于数据结构的展示非常清晰。非常方便维护。
-
-在一个对于代码编辑器的提示也有很大提升，很多情况下都不需要去查阅文档，编辑器就会把对应的属性、API 显示出来，灰常方便。
-
 # tips
+
+## 一些小技巧
+
+- string => UnionOfLetter
+
+```ts
+const string = 'wbcs'
+
+// 23 最多递归层貌似
+type CharUnion<S extends string> = S extends `${infer AlphaLetter}${infer Rest}`
+  ? AlphaLetter | CharUnion<Rest>
+  : never
+
+// type Letter = "w" | "b" | "c" | "s"
+type Letter = CharUnion<typeof string>
+```
 
 ## interface
 
@@ -108,3 +80,47 @@ fn.abc // 123
 ```
 
 - 显式地写出需要的 types： `compilerOptions.types: ["react"]`
+
+# typescript 基本类型
+
+- number
+- string
+- boolean
+- null
+- undefined
+- symbol
+- bigint
+- object
+- unknown
+- any
+- void
+- never
+- Enum
+- Array
+- Tuple
+
+# typescript 比 JavaScript 多了什么？
+
+- 为 `JavaScript` 添加了类型
+- 提供未来版本的语法到当前 js 引擎的功能
+
+# 强类型、弱类型
+
+- 强类型、弱类型：类型转换是否需要显示区分。
+  - 前者需要显示声明，比如 `C/C++` 中 `int doubleToInt = (int)doubleNumber;`
+  - 后者则是隐含的，不需要显示声明，比如 `JavaScript` 中 `const num = str;`
+- 静态类型、动态类型：类型检查的时机不同。
+  - 前者在编译阶段完成，真正 `runtime` 的时候是不需要进行的；
+  - 后者则是在 `runtime` 的过程中不断去检查，会造成一定 `runtime` 性能损耗，这也是动态语言的通病。
+
+`typescript`对`JavaScript`的类型检查是静态的，也就是说真正 `runtime` 的时候引擎依然是需要动态检查类型的，对于 code 的 `runtime` 效率而言没有任何提高。
+
+# 为什么要使用 typescript？
+
+那为什么还要使用 ts 呢？它的意义何在？答案是静态类型更加有利于构建大型 project。
+
+静态类型又可以称为 `early fail` 。一旦 code 被键入，就能够在执行之前发现一些潜在的错误，比如不能读取 string 特有方法等等。这对于大型项目调试困难是很有帮助的，能够很快的发现潜在的威胁在哪里。因为人很难发现某些特殊情况下，自己写的这段代码并不适用，而静态类型检查能够很好的解决这个问题。这是 `typescript` 最大的价值。
+
+其次，阅读代码的时候，一看就知道某个 obj 里有哪些 key，对于数据结构的展示非常清晰。非常方便维护。
+
+在一个对于代码编辑器的提示也有很大提升，很多情况下都不需要去查阅文档，编辑器就会把对应的属性、API 显示出来，灰常方便。

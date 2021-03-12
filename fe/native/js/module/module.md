@@ -25,8 +25,8 @@
 define(['dependence_name'], (args) => {
   // args就是从dependence_name引入的东西
   // ... Your fucking code ...
-  return your_export
-})
+  return your_export;
+});
 ```
 
 - `require()`函数： 用来引入模块的函数。
@@ -35,7 +35,7 @@ define(['dependence_name'], (args) => {
 require(['import_module_name'], (args) => {
   // args就是从import_module_name引入的东西
   // ... Your fucking code ...
-})
+});
 ```
 
 - `require.config`配置：
@@ -50,16 +50,16 @@ require(['import_module_name'], (args) => {
 
 ```javascript
 define(function (require, exprots, module) {
-  const fs = require('fs') //接受模块标识作为唯一参数
+  const fs = require('fs'); //接受模块标识作为唯一参数
   // exports，module则和CommonJS类似
   exports.module = {
     props: 'value',
-  }
-})
+  };
+});
 
 seajs.use(['test.js'], function (test_exports) {
   // ....
-})
+});
 ```
 
 |   null                     | AMD                                                                                                                                                                                                                                   | CMD                                                                                                                                                                     |
@@ -82,7 +82,7 @@ W3C 官方定义的 API 都只能基于 Browser，而 CommonJS 则弥补了 java
 ### 1、模块引用：
 
 ```javascript
-const fs = require('fs')
+const fs = require('fs');
 ```
 
 require 的执行步骤：
@@ -93,9 +93,9 @@ require 的执行步骤：
 4.  在执行模块代码的时候，会将模块包装成以下模式，以便于作用域在模块范围之内。
 
 ```javascript
-;(function (exports, require, module, __filename, __dirname) {
+(function (exports, require, module, __filename, __dirname) {
   // module codes
-})
+});
 ```
 
 5.  包装之后的代码同过 vm 原生模块的 runInThisContext()方法执行(类似 eval，不过具有明确上下文不会污染环境)，返回一个 function 对象。
@@ -105,8 +105,8 @@ require 的执行步骤：
 
 ```javascript
 function fn() {}
-exports.propName = fn
-module.exports = fn
+exports.propName = fn;
+module.exports = fn;
 ```
 
 一个`module`对象代表模块本身，`exports`是`module`的属性。一般通过在`exports`上挂载属性即可定义导出，也可以直接给`module.exports`赋值来定义导出(推荐)。
@@ -147,22 +147,22 @@ module.exports = fn
 ES6 的模块已经比较熟悉了，用法不多赘述，直接上码：
 
 ```javascript
-import { prop } from 'app' //从app中导入prop
-import { prop as newProp } from 'app' // 功能和上面一样，不过是将导入的prop重命名为newProp
+import { prop } from 'app'; //从app中导入prop
+import { prop as newProp } from 'app'; // 功能和上面一样，不过是将导入的prop重命名为newProp
 
-import App from 'App' // 导入App的default
-import * as App from 'App' // 导入App的所有属性到App对象中
+import App from 'App'; // 导入App的default
+import * as App from 'App'; // 导入App的所有属性到App对象中
 
-export const variable = 'value' // 导出一个名为variable的常量
-export { variable as newVar } // 和import 的重命名类似，将variable作为newVar导出
+export const variable = 'value'; // 导出一个名为variable的常量
+export { variable as newVar }; // 和import 的重命名类似，将variable作为newVar导出
 
-export default variable = 'value' // 将variable作为默认导出
-export { variable as default } //  和上面的写法基本一样
+export default variable = 'value'; // 将variable作为默认导出
+export { variable as default }; //  和上面的写法基本一样
 
-export { variable } from 'module' // 导出module的variable ，该模块中无法访问
-export { variable as newVar } from 'module' // 下面的自己看  不解释了
-export { variable as newVar } from 'module'
-export * from 'module'
+export { variable } from 'module'; // 导出module的variable ，该模块中无法访问
+export { variable as newVar } from 'module'; // 下面的自己看  不解释了
+export { variable as newVar } from 'module';
+export * from 'module';
 ```
 
 > ps：ES6 模块导入的变量(其实应该叫常量更准确)具有以下特点：
