@@ -38,23 +38,26 @@ subscription.unsubscribe();
 
 ## operators
 
-- creation
+- creation:
   - of
   - range
   - interval
-- pipeable
+- pipeable:
   - array-like:
     - map
     - mergeMap/flatMap
+    - switchMap: `switchMap(x => of(x, x * 2, x * 3))` return 会被 flat
     - filter
     - reduce
     - find
     - findIndex
     - every
-  - math
+  - math:
     - min
     - max
     - count
+  - sideEffects:
+    - tap: 对 observable 的每个 value 都会触发
 
 ## subject
 
@@ -97,6 +100,6 @@ observable.subscribe(subject);
 // fuck: 3
 ```
 
-- BehaviorSubject: 被 `subscribe` 时，立即传递最新的值给 `observere`
+- BehaviorSubject: 被 `subscribe` 时，立即传递最新的值给 `observer`
 - ReplaySubject(bufferSize?: number, windowTime?: number, scheduler?: SchedulerLike): 重播在 `windowTime` 内的 `bufferSize` 个值
 - AsyncSubject: `observable.complete()` 后，发送给 `observer` 最后一次的值
