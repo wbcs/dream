@@ -36,7 +36,45 @@ subscription.unsubscribe();
 
 `subscription` 可以 `subscription.add(anotherSubscription)`，这样 `subscription.unsubscribe()` 就可以取消对多个 `observable` 的观察; 当然也可以 `subscription.remove(anotherSubscription)` 来执行 `undo` 。
 
-## operators
+## Operators
+
+Operators 是一些纯函数，这些纯函数接收前一个 observable 作为输入，生成一个新的 observable 作为输出。
+
+我们自己写一个将 `Observable<number>` 值乘以 2 的 operator：
+
+```ts
+import { Observable, Observer, pipe } from 'rxjs';
+import { of, map } from 'rxjs/operators';
+
+function double() {
+  return (observable: Observable<number>) =>
+    new Observable((subscriber) => {
+      const observer: Observer<number> = {
+        next: (v) => subscriber.next(v * 2),
+        error: (err) => subscriber.error(err),
+        complete: () => subscriber.complete,
+      };
+      const subscription = observable.subscribe(observer);
+
+      return () => subscription.unsubscribe();
+    });
+}
+
+of(1)
+  .pipe(double())
+  .subscribe((v) => {
+    console.log(v); // 2
+  });
+
+// 当然 可以用已有的 operators 组合出一个新的 operator
+function double() {
+  return pipe(map((v) => v * 2));
+}
+```
+
+### Hight-Order Operators
+
+顾名思义， 和高阶函数类似，是 value 为 Observable 的 Operators。
 
 - creation:
   - of
@@ -52,6 +90,7 @@ subscription.unsubscribe();
     - find
     - findIndex
     - every
+    - concatAll
   - math:
     - min
     - max
@@ -59,9 +98,10 @@ subscription.unsubscribe();
   - sideEffects:
     - tap: 对 observable 的每个 value 都会触发
 
-## subject
+## Subject
 
-subject 是特殊的 observable ，类似 EventEmitter 能够使同一个数据多播到多个 observable。
+- `Subject` 是 `Observable` ，类似 `EventEmitter` 能够使同一个数据多播到多个 `Observable`
+- `Subject` 是 `Observer` ，能够观察 Observable: `observable.subscribe(subject)`
 
 ```ts
 import { Subject, from } from 'rxjs';
@@ -78,20 +118,8 @@ subject.next(2);
 // fuck: 1
 // shit: 2
 // fuck: 2
-```
 
-同时，subject 也是一个 observer。
-
-```ts
-import { Subject, from } from 'rxjs';
-
-const subject = new Subject<number>();
-
-subject.subscribe((v) => console.log(`shit: ${v}`));
-subject.subscribe((v) => console.log(`fuck: ${v}`));
-
-const observalbe = from([1, 2, 3]);
-observable.subscribe(subject);
+from([1, 2, 3]).subscribe(subject);
 // shit: 1
 // fuck: 1
 // shit: 2
@@ -100,6 +128,12 @@ observable.subscribe(subject);
 // fuck: 3
 ```
 
-- BehaviorSubject: 被 `subscribe` 时，立即传递最新的值给 `observer`
-- ReplaySubject(bufferSize?: number, windowTime?: number, scheduler?: SchedulerLike): 重播在 `windowTime` 内的 `bufferSize` 个值
-- AsyncSubject: `observable.complete()` 后，发送给 `observer` 最后一次的值
+- `BehaviorSubject`: 被 `subscribe` 时，立即传递最新的值给 `observer`
+- `ReplaySubject(bufferSize?: number, windowTime?: number, scheduler?: SchedulerLike)`: 重播在 `windowTime` 内的 `bufferSize` 个值
+- `AsyncSubject`: `observable.complete()` 后，发送给 `observer` 最后一次的值
+
+实现一个 `multicast`:
+
+```ts
+
+```
