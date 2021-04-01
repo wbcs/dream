@@ -74,7 +74,7 @@ function double() {
 
 ### Hight-Order Operators
 
-顾名思义， 和高阶函数类似，是 value 为 Observable 的 Operators。
+顾名思义，和高阶函数类似，是 value 为 Observable 的 Operators。
 
 - creation:
   - of
@@ -91,6 +91,7 @@ function double() {
     - findIndex
     - every
     - concatAll
+    - withLastestFrom: `[v, arr[arr.length - 1]]`
   - math:
     - min
     - max
