@@ -1,2 +1,12 @@
-+ side effect => 如果打到一个bundle，那这个lib注定与Tree-shaking无缘：
-所以目前的组件库都是一个组件打成一个目录/文件。那这样就不能{a,bc}这样子引入了。 目前有main、module两个package.json字段，指定入口，由入口去一个个引入，然后再export出来。美滋滋。但是webpack目前不支持导出es module。所以打包最好用rollup咯
+## 和 webpack 类似功能的一些插件
+
+- `rollup-plugin-polyfill-node`: 顾名思义，很多 `nodejs` 的系统模块在浏览器是没有的，需要做 `polyfill`
+- `rollup-plugin-terser`: 压缩打包的文件，和 `rollup-plugin-uglify` 只能压缩 `es5` 不同，它支持 `es6`
+- `@rollup/plugin-commonjs`: `npm` 很多包都是基于 `commonjs` 来编写的，而 `rollup` 是使用 `esm` 构建的，所以在不支持 `esm` 的包支持 `esm` 之前，可以用这个插件将 `commonjs` 转换成 `esm`
+- `@rollup/plugin-node-resolve`: 采用 `nodejs` 的模块解析策略，即 `node_moduls` 。它可以告诉 `rollup` 如何查找外部模块，如果不用的话，`rollup` 只会简单的 `import` 外部依赖（类似 `webpack` 将用到的所有包都当做 `externals` ）
+- `@rollup/plugin-alias`: 类似 `webpack` 自带的 `alias`
+- `@rollup/plugin-replace`: 类似 `webpack.DefinePlugin`
+- `@rollup/plugin-babel`: 类似 babel-loader
+- `rollup-plugin-typescript2`: 类似 ts-loader
+- `rollup-plugin-postcss`: 类似 style-loader,css-loader,less-loader
+- `@rollup/plugin-json`: for json
