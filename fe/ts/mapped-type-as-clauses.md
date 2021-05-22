@@ -25,4 +25,3 @@ type MapUnionLiteral<T> = {
 // }
 MapUnionLiteral<{ name: string; age: number }>
 ```
-
