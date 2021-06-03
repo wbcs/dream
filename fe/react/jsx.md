@@ -46,3 +46,10 @@ React.createElement('div', { ...props, key: key }, children);
 import { jsx } from 'react'; // auto
 jsx('div', { ...props, children: children }, key);
 ```
+
+## 和 fiber 的区别
+
+- `jsx` 描述了一个 React 元素的内容, 不包括 scheduler、Reconciler、renderer 所需的信息
+- fiber 则是根据 `jsx` 的内容生成的更广的数据结构，除了 `jsx` 中的信息外，还有优先级、组件的 state、被用于 renderer 的 tag（update,mount）
+
+> fiber 会在 mount 时根据 `jsx` 被创建出来。更新时，Reconciler 会根据对比结果给 fiber 打上想要 renderer 如何操作的 tag
