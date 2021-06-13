@@ -5,15 +5,15 @@
 - string => UnionOfLetter
 
 ```ts
-const string = 'wbcs'
+const string = "wbcs";
 
 // 23 最多递归层貌似
 type CharUnion<S extends string> = S extends `${infer AlphaLetter}${infer Rest}`
   ? AlphaLetter | CharUnion<Rest>
-  : never
+  : never;
 
 // type Letter = "w" | "b" | "c" | "s"
-type Letter = CharUnion<typeof string>
+type Letter = CharUnion<typeof string>;
 ```
 
 ## interface
@@ -22,20 +22,20 @@ type Letter = CharUnion<typeof string>
 
 ```ts
 interface ITest {
-  age: number
+  age: number;
 }
 function fn(arg: ITest) {
   // ,,,,
 }
 fn({
   age: 1,
-  name: 'wb', // 报错
-})
+  name: "wb", // 报错
+});
 const obj = {
   age: 1,
-  name: 'wb',
-}
-fn(obj) // okay
+  name: "wb",
+};
+fn(obj); // okay
 ```
 
 > 为了防止拼写错误，ts 会对对象字面量特殊对待，会经过除 interface 外的额外属性检查。
@@ -44,8 +44,8 @@ fn(obj) // okay
 
 ```ts
 interface ITest {
-  [key: string]: string
-  [key: number]: number // 出错
+  [key: string]: string;
+  [key: number]: number; // 出错
 }
 ```
 
@@ -55,14 +55,14 @@ interface ITest {
 
 ```ts
 interface Test {
-  age: number
-  getAge: () => number
+  age: number;
+  getAge: () => number;
 }
 class Person implements Test {
-  age: number
+  age: number;
   constructor() {}
   getAge() {
-    return this.age // error
+    return this.age; // error
   }
 }
 ```
@@ -72,11 +72,11 @@ class Person implements Test {
 
 ```ts
 function fn() {}
-fn.abc // undefined
+fn.abc; // undefined
 namespace fn {
-  export const abc = 123
+  export const abc = 123;
 }
-fn.abc // 123
+fn.abc; // 123
 ```
 
 - 显式地写出需要的 types： `compilerOptions.types: ["react"]`
@@ -115,12 +115,7 @@ fn.abc // 123
 
 `typescript`对`JavaScript`的类型检查是静态的，也就是说真正 `runtime` 的时候引擎依然是需要动态检查类型的，对于 code 的 `runtime` 效率而言没有任何提高。
 
-# 为什么要使用 typescript？
-
-那为什么还要使用 ts 呢？它的意义何在？答案是静态类型更加有利于构建大型 project。
-
-静态类型又可以称为 `early fail` 。一旦 code 被键入，就能够在执行之前发现一些潜在的错误，比如不能读取 string 特有方法等等。这对于大型项目调试困难是很有帮助的，能够很快的发现潜在的威胁在哪里。因为人很难发现某些特殊情况下，自己写的这段代码并不适用，而静态类型检查能够很好的解决这个问题。这是 `typescript` 最大的价值。
-
-其次，阅读代码的时候，一看就知道某个 obj 里有哪些 key，对于数据结构的展示非常清晰。非常方便维护。
-
-在一个对于代码编辑器的提示也有很大提升，很多情况下都不需要去查阅文档，编辑器就会把对应的属性、API 显示出来，灰常方便。
+- 为什么要使用 typescript？
+  - 编译时检查类型错误，即 early fail
+  - IDE 自动提醒
+  - 类型即注释，更方便维护
