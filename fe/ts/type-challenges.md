@@ -208,6 +208,22 @@ declare function join<T extends string>(
 ): <U extends string[]>(...parts: U) => Join<U, T>;
 ```
 
+- [x] <img src="https://camo.githubusercontent.com/f7d8061636ad216b5a17c533b2fa23b0ccd7914d025fd67a3834b00466faadb1/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d353725453325383325424247657425323052657175697265642d646533643337" alt="57・Get Required" />
+
+```ts
+type GetRequired<T> = {
+  [K in keyof T]-?: { [k in K]?: T[k] } extends { [k in K]: T[k] }
+    ? never
+    : {
+        [k in K]: T[K];
+      };
+}[keyof T];
+```
+
+never 和 其他类型 & 会直接被消除掉
+
+> `{key?: 'fuck'}` 和 `{key: undefined}` 的区别是啥
+
 ## @TODO
 
 - 为什么 `() => void` 可以赋值给 `Record<any, any>` 但不可以给 `Record<any, unknown>`
@@ -228,5 +244,13 @@ type TrimLeft<S extends string> = S extends `${infer Alpha}${infer Rest}`
 ```ts
 type Type<T> = {
   [K in keyof T]: T[K];
+};
+```
+
+- key as 后面可以 + 表达式：
+
+```ts
+type Hehe<T> = {
+  [K in keyof T as K extends 'fuck' ? K : never]: T[K];
 };
 ```
