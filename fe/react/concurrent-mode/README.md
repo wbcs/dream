@@ -60,7 +60,11 @@ createRoot(document.querySelector('#root')).render(<App />);
 
 - 有 batching 的概念，各个任务被划分到不同的分类
 - 不一定优先级高的任务就必须先执行
--
+
+优点：
+
+- lane 将任务的 优先级 和 应该被处理的哪一批任务 分类
+- lane 可以用单一 32 位表示许多不同任务
 
 > 在 React 中， Suspense 中抛出 thenable 对象为 IO 任务。优先级较 CPU 高。
 
