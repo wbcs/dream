@@ -192,6 +192,28 @@ type LengthOfString<S extends string> = StringToTuple<S>['length'];
 
 ### hard
 
+- [x] <img src="https://camo.githubusercontent.com/02b5863bc5c91d63f76326905a0fbad21790d6182a437efd2b624df66faf60a6/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d3625453325383325424253696d706c652532305675652d646533643337" alt="6・Simple Vue" />
+
+```ts
+type MapComputed<C> = {
+  [K in keyof C]: C[K] extends () => infer R ? R : never;
+};
+
+type Options<D, C, M, MapedC, This = ThisType<MapedC & D & M>> = {
+  data: (this: null) => D;
+  computed?: C & This;
+  methods?: M & This;
+};
+
+declare function SimpleVue<
+  D,
+  C,
+  M,
+  MapedC = MapComputed<C>,
+  This = ThisType<MapedC & D & M>
+>(options: Options<D, C, M, MapedC>): D & MapedC & (M & This);
+```
+
 - [x] <img src="https://camo.githubusercontent.com/290418811a4f4dbcbfd348a6bee7afd3bfbf7f1de855fd8c9c566ad07b733c53/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d383437254533253833254242537472696e672532304a6f696e2d646533643337" alt="847・String Join" >
 
 ```ts
