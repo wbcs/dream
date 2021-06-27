@@ -33,7 +33,7 @@ type First<T extends any[]> = T extends [infer U, ...infer reset] ? U : never;
 - [x] <img src="https://camo.githubusercontent.com/88123c3a693459ca46d0cec08df66ce20e1161e7f3b478cbc9f3a7ce096f5030/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d31382545332538332542424c656e6774682532306f662532305475706c652d376161643063" alt="18・Length of Tuple" >
 
 ```ts
-type Length<T extends any[] | readonly any[]> = T["length"];
+type Length<T extends any[] | readonly any[]> = T['length'];
 ```
 
 - [x] <img src="https://camo.githubusercontent.com/8c39b93cd351065cc0fae36700c60ad0168f5693db14740fdfddb85f0656c4d3/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d34332545332538332542424578636c7564652d376161643063" alt="43・Exclude">
@@ -168,13 +168,13 @@ type LookUp<U, T> = U extends { type: T } ? U : never;
 - TrimLeft
 
 ```ts
-type TrimLeft<S extends string> = S extends `${" " | "\n" | "\t"}${infer Rest}`
+type TrimLeft<S extends string> = S extends `${' ' | '\n' | '\t'}${infer Rest}`
   ? TrimLeft<Rest>
   : S;
 
 // 或者
 type TrimLeft<S extends string> = S extends `${infer Alpha}${infer Rest}`
-  ? Alpha extends " " | "\n" | "\t"
+  ? Alpha extends ' ' | '\n' | '\t'
     ? TrimLeft<Rest>
     : `${Alpha}${Rest}`
   : never;
@@ -187,7 +187,7 @@ type StringToTuple<S extends string> = S extends `${infer Alpha}${infer Rest}`
   ? [Alpha, ...StringToTuple<Rest>]
   : [];
 
-type LengthOfString<S extends string> = StringToTuple<S>["length"];
+type LengthOfString<S extends string> = StringToTuple<S>['length'];
 ```
 
 ### hard
@@ -200,7 +200,7 @@ type Join<T, D extends string> = T extends string[]
     ? Rest extends []
       ? Alpha
       : `${Alpha & string}${D}${Join<Rest, D>}`
-    : ""
+    : ''
   : never;
 
 declare function join<T extends string>(
@@ -237,6 +237,25 @@ type Camelize<T extends Record<any, any>> = {
 };
 ```
 
+- [x] <img src="https://camo.githubusercontent.com/6575f7242a63e3f575f80e362f57be188a8a8ac52cf985733ea1ea59a62c6760/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d3132393025453325383325424250696e69612d646533643337" alt="1290・Pinia" />
+
+```ts
+type MapGetters<T> = {
+  [K in keyof T]: T[K] extends () => infer R ? R : T[K];
+};
+
+type ObjectDescriptor<S, G, A> = {
+  id: string;
+  state: () => S;
+  getters?: G & ThisType<S & MapGetters<G> & A>;
+  actions?: A & ThisType<S & MapGetters<G> & A>;
+};
+
+declare function defineStore<S, G, A>(
+  parameters: ObjectDescriptor<S, G, A>
+): S & MapGetters<G> & A;
+```
+
 never 和 其他类型 & 会直接被消除掉
 
 > `{key?: 'fuck'}` 和 `{key: undefined}` 的区别是啥
@@ -248,7 +267,7 @@ never 和 其他类型 & 会直接被消除掉
 
 ```ts
 type TrimLeft<S extends string> = S extends `${infer Alpha}${infer Rest}`
-  ? Alpha extends " " | "\n" | "\t"
+  ? Alpha extends ' ' | '\n' | '\t'
     ? TrimLeft<Rest>
     : `${Alpha}${Rest}`
   : never;
@@ -268,6 +287,71 @@ type Type<T> = {
 
 ```ts
 type Hehe<T> = {
-  [K in keyof T as K extends "fuck" ? K : never]: T[K];
+  [K in keyof T as K extends 'fuck' ? K : never]: T[K];
 };
+```
+
+- 可以在函数前加泛型来实现类似 infer 的效果
+
+```ts
+type ObjProps<name, age> = {
+  name: name;
+  age: age;
+};
+declare function mapObjProps<name, age>(
+  args: ObjProps<name, age>
+): {
+  newName: name;
+  newAge: age;
+};
+
+// {
+//   newName: "wb",
+//   newAge: 23,
+// }
+const obj = mapObjProps({
+  name: 'wb',
+  age: 23,
+});
+```
+
+- ThisType: 类似 Vue
+
+```ts
+type MapGetters<T> = {
+  [K in keyof T]: T[K] extends () => infer R ? R : T[K];
+};
+
+type ObjectDescriptor<S, G, A> = {
+  id: string;
+  state: () => S;
+  getters?: G & ThisType<S & MapGetters<G> & A>;
+  actions?: A & ThisType<S & MapGetters<G> & A>;
+};
+
+declare function defineStore<S, G, A>(
+  parameters: ObjectDescriptor<S, G, A>
+): S & MapGetters<G> & A;
+
+const obj = defineStore({
+  id: 'fuck',
+  state: () => ({
+    words: ['fuck', 'you', 'bitch'],
+    num: -1,
+  }),
+  getters: {
+    getStringifyWords() {
+      return this.words.join(',');
+    },
+  },
+  actions: {
+    setNum(num: number) {
+      this.num = num;
+      return true;
+    },
+  },
+});
+
+const words = obj.getStringifyWords;
+const isSuccess = obj.setNum(123);
 ```
