@@ -33,7 +33,7 @@ type First<T extends any[]> = T extends [infer U, ...infer reset] ? U : never;
 - [x] <img src="https://camo.githubusercontent.com/88123c3a693459ca46d0cec08df66ce20e1161e7f3b478cbc9f3a7ce096f5030/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d31382545332538332542424c656e6774682532306f662532305475706c652d376161643063" alt="18・Length of Tuple" >
 
 ```ts
-type Length<T extends any[] | readonly any[]> = T['length'];
+type Length<T extends any[] | readonly any[]> = T["length"];
 ```
 
 - [x] <img src="https://camo.githubusercontent.com/8c39b93cd351065cc0fae36700c60ad0168f5693db14740fdfddb85f0656c4d3/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d34332545332538332542424578636c7564652d376161643063" alt="43・Exclude">
@@ -168,13 +168,13 @@ type LookUp<U, T> = U extends { type: T } ? U : never;
 - TrimLeft
 
 ```ts
-type TrimLeft<S extends string> = S extends `${' ' | '\n' | '\t'}${infer Rest}`
+type TrimLeft<S extends string> = S extends `${" " | "\n" | "\t"}${infer Rest}`
   ? TrimLeft<Rest>
   : S;
 
 // 或者
 type TrimLeft<S extends string> = S extends `${infer Alpha}${infer Rest}`
-  ? Alpha extends ' ' | '\n' | '\t'
+  ? Alpha extends " " | "\n" | "\t"
     ? TrimLeft<Rest>
     : `${Alpha}${Rest}`
   : never;
@@ -187,7 +187,7 @@ type StringToTuple<S extends string> = S extends `${infer Alpha}${infer Rest}`
   ? [Alpha, ...StringToTuple<Rest>]
   : [];
 
-type LengthOfString<S extends string> = StringToTuple<S>['length'];
+type LengthOfString<S extends string> = StringToTuple<S>["length"];
 ```
 
 ### hard
@@ -200,7 +200,7 @@ type Join<T, D extends string> = T extends string[]
     ? Rest extends []
       ? Alpha
       : `${Alpha & string}${D}${Join<Rest, D>}`
-    : ''
+    : ""
   : never;
 
 declare function join<T extends string>(
@@ -220,6 +220,23 @@ type GetRequired<T> = {
 }[keyof T];
 ```
 
+- [x] <img src="https://camo.githubusercontent.com/a2f34dc06f0a3c78e00086adb28081fce708fc1bee0b7d272d95fd4fc648cc88/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d3133383325453325383325424243616d656c697a652d646533643337" alt="1383・Camelize" />
+
+```ts
+type CamelizeKey<K extends string> = K extends `${infer Alpha}_${infer Beta}`
+  ? `${Alpha}${Capitalize<Beta>}`
+  : K;
+
+type Camelize<T extends Record<any, any>> = {
+  [K in keyof T as K extends string ? CamelizeKey<K> : K]: T[K] extends Record<
+    any,
+    any
+  >
+    ? Camelize<T[K]>
+    : T[K];
+};
+```
+
 never 和 其他类型 & 会直接被消除掉
 
 > `{key?: 'fuck'}` 和 `{key: undefined}` 的区别是啥
@@ -231,7 +248,7 @@ never 和 其他类型 & 会直接被消除掉
 
 ```ts
 type TrimLeft<S extends string> = S extends `${infer Alpha}${infer Rest}`
-  ? Alpha extends ' ' | '\n' | '\t'
+  ? Alpha extends " " | "\n" | "\t"
     ? TrimLeft<Rest>
     : `${Alpha}${Rest}`
   : never;
@@ -251,6 +268,6 @@ type Type<T> = {
 
 ```ts
 type Hehe<T> = {
-  [K in keyof T as K extends 'fuck' ? K : never]: T[K];
+  [K in keyof T as K extends "fuck" ? K : never]: T[K];
 };
 ```
