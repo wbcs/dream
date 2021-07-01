@@ -377,3 +377,17 @@ const obj = defineStore({
 const words = obj.getStringifyWords;
 const isSuccess = obj.setNum(123);
 ```
+
+- extends 会将联合类型展开：
+
+```ts
+type Ref<T> = { current: T };
+type ConditionalWrapper<T> = T extends any ? Ref<T> : never;
+
+// {current: 1|2}
+type a = Ref<1 | 2>;
+// {current: 1} | {current: 2}
+type b = ConditionalWrapper<1 | 2>;
+```
+
+- https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#distributive-conditional-types
