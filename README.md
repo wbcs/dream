@@ -38,6 +38,7 @@
 - [wzmmmmj](https://wzmmmmj.com/)
 - [changchen](https://changchen.me/)
 - [draveness](https://draveness.me/)
+- [http://blog.soliloquize.org/](http://blog.soliloquize.org/)
 
 # @TODO
 
