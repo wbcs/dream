@@ -1,4 +1,4 @@
-## CM
+# Concurrent Mode
 
 快速响应：
 
@@ -8,36 +8,127 @@
 
 要完成这两件事情，更新的过程需要被中断并且能够被恢复。
 
+## 启用 Concurrent features
+
 ```tsx
-import { useState, useDeferredValue, lazy } from 'react';
-import { createRoot } from 'react-dom';
+import * as ReactDOM from 'react-dom';
+import App from './App';
 
-function App() {
-  const [text, setText] = useState('hello');
-
-  // 最大不超过 timeoutMs 的延迟
-  const deferredText = useDeferredValue(text, { timeoutMs: 5000 });
-
-  return (
-    <div className="App">
-      <input value={text} onChange={(e) => setText(e.target.value)} />
-      <Component text={deferredText} />
-    </div>
-  );
-}
-
-function Component({ text }: { text: string }) {
-  return (
-    <ul>
-      {new Array(1000).fill(true).map((_, index) => (
-        <li key={index}>{text}</li>
-      ))}
-    </ul>
-  );
-}
-
-createRoot(document.querySelector('#root')).render(<App />);
+ReactDOM.createRoot(document.querySelector('#root')).render(<App />);
 ```
+
+|                                          | legacy 模式 | blocking 模式      | concurrent 模式 |
+| ---------------------------------------- | ----------- | ------------------ | --------------- |
+| String Refs                              | ✅          | 🚫                 | 🚫              |
+| Legacy Context                           | ✅          | 🚫                 | 🚫              |
+| findDOMNode                              | ✅          | 🚫                 | 🚫              |
+| Suspense                                 | ✅          | ✅                 | ✅              |
+| SuspenseList                             | 🚫          | ✅                 | ✅              |
+| Suspense SSR + Hydration                 | 🚫          | ✅                 | ✅              |
+| Progressive Hydration                    | 🚫          | ✅                 | ✅              |
+| Selective Hydration                      | 🚫          | 🚫                 | ✅              |
+| Cooperative Multitasking                 | 🚫          | 🚫                 | ✅              |
+| Automatic batching of multiple setStates | 🚫          | ✅                 | ✅              |
+| Priority-based Rendering                 | 🚫          | 🚫                 | ✅              |
+| Interruptible Prerendering               | 🚫          | 🚫                 | ✅              |
+| useTransition                            | 🚫          | 🚫                 | ✅              |
+| useDeferredValue                         | 🚫          | 🚫                 | ✅              |
+| Suspense Reveal “Train”                  | 🚫          | 🚫                 | ✅              |
+| ReactDOM                                 | render      | createBlockingRoot | createRoot      |
+
+## useTransition
+
+这个 `API` 的存在是因为某些场景由于 state 改变 rerender 时的任务高度占用 CPU, 造成用户无法正常交互. `useTransition` 就是 `React` 通过一些方法, 根据本机 CPU 的计算能力来决定是否频繁地执行这些昂贵的操作.
+
+```tsx
+import { useState, useTransition } from 'react';
+
+// 用户输入会很频繁 如果不做处理 列表页的渲染是相当耗费性能的
+// 在计算能力低下的 CPU 会造成用户输入卡顿，影响用户体验
+const Input = ({ onChange }: { onChange: (value: string) => void }) => {
+  const [value, setValue] = useState('');
+
+  return (
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => {
+        setValue(e.target.value);
+        onChange(e.target.value);
+      }}
+    />
+  );
+};
+
+const App = () => {
+  const [value, setValue] = useState('');
+  const [isPending, startTransition] = useTransition();
+
+  // 在 onChange 的时候 startTransition
+  // 具体什么时候渲染列表页交由 React 觉得
+  return (
+    <section>
+      <Input onChange={(value) => startTransition(() => setValue(value))} />
+      isPending: {JSON.stringify(isPending)}
+      <ul>
+        {new Array(10000).fill(true).map((item, index) => (
+          <li key={index}>
+            {index}:{value}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+};
+```
+
+> 为什么不用节流？<br />
+> 在计算性能超高的计算机上，防抖这样的操作会比不做处理更慢，反而降低了用户体验。
+
+## useDeferredValue
+
+上面的例子也可以用 `useDeferredValue` 重写，可以达到类似的效果
+
+```tsx
+import { useState, useDeferredValue, useMemo } from 'react';
+
+const App = () => {
+  const [value, setValue] = useState('');
+  const deferredValue = useDeferredValue(value, { timeMs: 500 });
+
+  // 在 onChange 的时候 startTransition
+  // 具体什么时候渲染列表页交由 React 觉得
+  return (
+    <section>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+        }}
+      />
+      {useMemo(
+        () => (
+          <ul>
+            {new Array(10000).fill(true).map((item, index) => (
+              <li key={index}>
+                {index}:{deferredValue}
+              </li>
+            ))}
+          </ul>
+        ),
+        [deferredValue]
+      )}
+    </section>
+  );
+};
+```
+
+## render, commit, work
+
+`Reconciler` 工作阶段被称为 `render` 阶段，因为这个过程会调用 render 方法得到 VNode。`renderer` 工作的阶段被称为 `commit` 阶段。`render` 和 `commit` 统称为 `work` 阶段，也就是 React 在工作，如果是 `scheduler` 在工作就不属于 work。
+
+> render 可中断，commit 是不可中断的。
 
 - 对于 v15 的 `Reconciler`
   - `Reconciler` 对 VNode 的比对和对 UI 的 `renderer` 是交替工作的。当 `Reconciler` 发现有需要更新的 VNode 时就告知 `renderer`，`renderer` 执行更新操作，然后递归更新子节点。
@@ -47,10 +138,6 @@ createRoot(document.querySelector('#root')).render(<App />);
   - 其中 `scheduler` 和 `Reconciler` 都是在内存中操作，即使被终端 UI 也不会是不完全的。
   - `Reconciler` 的工作是否需要被中断，则是由 `scheduler` 来判断的。
     > 双缓存技术在 React 中的实践其实是将当前构建的 UI 树 `workInProgress` 和当前 UI 已经渲染后的 UI 树 `currentFiber` 分为两颗树。两者交替交还身份，当 `renderer` 完成渲染后，`workInProgress` 就成了 `currentFiber`，`currentFiber` 就成了 `workInProgress` 供下次更新使用。两者通过 `alternate` 互相引用。
-
-`Reconciler` 工作阶段被称为 `render` 阶段，因为这个过程会调用 render 方法得到 VNode。`renderer` 工作的阶段被称为 `commit` 阶段。`render` 和 `commit` 统称为 `work` 阶段，也就是 React 在工作，如果是 `scheduler` 在工作就不属于 work。
-
-> render 可中断，commit 是不可中断的。
 
 ## lane
 
@@ -68,10 +155,8 @@ createRoot(document.querySelector('#root')).render(<App />);
 
 > 在 React 中， Suspense 中抛出 thenable 对象为 IO 任务。优先级较 CPU 高。
 
-### @TODO
+## Ref
 
-- react-test
-
-# start
-
-[浅入 React16/Fiber Part4 Concurrent Mode](https://zhuanlan.zhihu.com/p/82563945)
+- [Real world example: adding startTransition for slow renders](https://github.com/reactwg/react-18/discussions/65)
+- [New feature: startTransition](https://github.com/reactwg/react-18/discussions/41)
+- [浅入 React16/Fiber Part4 Concurrent Mode](https://zhuanlan.zhihu.com/p/82563945)
