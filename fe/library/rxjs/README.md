@@ -99,6 +99,35 @@ function double() {
   - sideEffects:
     - tap: 对 observable 的每个 value 都会触发
 
+## Observable
+
+```js
+import { Observable } from 'rxjs';
+
+function producer(subscriber) {
+  const clear = setInterval(() => {
+    subscriber.next(performance.now());
+  });
+
+  return () => {
+    clearInterval(clear);
+  };
+}
+
+const observable = new Observable(producer);
+
+// 每次 subscribe 都会新创建一个 observable
+// 即 producer 会重新执行 subscribe 几次就执行几次
+// 每个 observer 都会从头开始 接受所有的 value
+const subscription = observable.subscribe((value) => {
+  console.log(value);
+});
+```
+
+- 单播：普通的 Observable，只能被一个 subscriber 监听
+- 多播：不会从头开始接受数据，即能够被多个 subscriber 监听，Subject，其实就是对 source 进行了转发
+- 广播：
+
 ## Subject
 
 - `Subject` 是 `Observable` ，类似 `EventEmitter` 能够使同一个数据多播到多个 `Observable`
