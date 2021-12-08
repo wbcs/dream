@@ -152,11 +152,9 @@ type Unshift<T extends any[], E extends any> = [E, ...T];
 ```ts
 declare function PromiseAll<T extends Readonly<any[]>>(
   values: Readonly<[...T]>
-): Promise<
-  {
-    [K in keyof T]: T[K] extends Promise<infer U> ? U : T[K];
-  }
->;
+): Promise<{
+  [K in keyof T]: T[K] extends Promise<infer U> ? U : T[K];
+}>;
 ```
 
 - LookUp
@@ -378,7 +376,7 @@ const words = obj.getStringifyWords;
 const isSuccess = obj.setNum(123);
 ```
 
-- extends 会将联合类型展开：
+- extends 会将联合类型展开，即 conditional distribution：
 
 ```ts
 type Ref<T> = { current: T };
@@ -391,3 +389,17 @@ type b = ConditionalWrapper<1 | 2>;
 ```
 
 - https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#distributive-conditional-types
+
+- extends 后面针对多个相同类型做 infer，最终会推导为 intersection：
+
+```ts
+type User = { age: number } | { name: string };
+type UnionToIntersection<T> = (
+  T extends any ? (arg: T) => void : never
+) extends (arg: infer U) => void
+  ? U
+  : any;
+
+// 会被推导为 { age: number } & { name: string };
+type Wb = UnionToIntersection<User>;
+```

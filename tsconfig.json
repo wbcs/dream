@@ -19,7 +19,9 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "outDir": "./dist",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "stripInternal": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": ["./demo"]
 }
