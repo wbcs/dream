@@ -1,8 +1,8 @@
-## type, types, main, module, typesVersions, exports
+## type, types, main, module, typesVersions, exports, imports
 
 一个 npm package 被使用的时候会根据其 package.json 中约定好的协议来执行一系列操作：
 
-- type: `'moodule'` | `'commonjs'`
+- type: `'module'` | `'commonjs'`
 - main: `commonjs` 模块系统的入口文件
 - module: `esm` 模块系统入口文件
 - types: `ts` 类型文件
@@ -41,7 +41,9 @@
       // require 时引入的文件
       "require": "./dist/*.js",
       // nodejs 环境时引入的文件
-      "node": "./dist/*.js"
+      "node": "./dist/*.js",
+      // 浏览器环境，nodejs 环境会直接忽略
+      "browser": "./brwser/*.js"
     },
     // 确保可以 import {} from 'shared/components'
     "./components": {
@@ -60,3 +62,34 @@
   }
 }
 ```
+
+可以看到 exports 可以实现在不同环境定义不同的映射扩展：
+
+- import: esm
+- require: commonjs
+- node: Nodejs 环境
+- default: 通用 fallback
+- browser: 浏览器
+- 其他:
+  - NODE_ENV=AAA,BBB 根据 AAA->BBB 的顺序来决定使用哪个 `exports[NODE_ENV]`
+
+除了以上 exports 的行为，针对 import 也有个**提案** imports：
+
+```json
+{
+  "name": "shared",
+  "imports": {
+    "#hehe": "./dist/hehe.js",
+    "#shit/": "./dist/shit/"
+  }
+}
+```
+
+这样，在 shared 内部就可以：
+
+```js
+import { Hehe } from '#hehe';
+import { Fuck } from '#shit/fuck';
+```
+
+- #xxx: 仅当前包内部可以使用，类似于 webpack 等的 alias 功能
