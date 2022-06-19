@@ -403,3 +403,36 @@ type UnionToIntersection<T> = (
 // 会被推导为 { age: number } & { name: string };
 type Wb = UnionToIntersection<User>;
 ```
+
+- 比较两个数字：
+
+```ts
+type MakeTuple<U extends number, T extends any[] = []> = T['length'] extends U
+  ? T
+  : MakeTuple<U, [any, ...T]>;
+
+type IsGe<T extends number, U extends number> = T extends U
+  ? false
+  : Reduce<U, MakeTuple<T>>;
+
+type Reduce<U extends number, T extends any[] = []> = T['length'] extends U
+  ? true
+  : T['length'] extends 0
+  ? false
+  : T extends [infer Alpha, ...infer Rest]
+  ? Reduce<U, Rest>
+  : never;
+
+type Compare<T extends number, U extends number> = T extends U
+  ? 0
+  : IsGe<T, U> extends true
+  ? 1
+  : -1;
+
+// 1
+type shouldBe1 = Compare<40, 5>;
+// 0
+type shouldBe0 = Compare<5, 5>;
+// -1
+type shouldBe_1 = Compare<1, 500>;
+```
