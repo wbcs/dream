@@ -411,7 +411,7 @@ type MakeTuple<U extends number, T extends any[] = []> = T['length'] extends U
   ? T
   : MakeTuple<U, [any, ...T]>;
 
-type IsGe<T extends number, U extends number> = T extends U
+type IsGt<T extends number, U extends number> = T extends U
   ? false
   : Reduce<U, MakeTuple<T>>;
 
@@ -425,7 +425,7 @@ type Reduce<U extends number, T extends any[] = []> = T['length'] extends U
 
 type Compare<T extends number, U extends number> = T extends U
   ? 0
-  : IsGe<T, U> extends true
+  : IsGt<T, U> extends true
   ? 1
   : -1;
 
