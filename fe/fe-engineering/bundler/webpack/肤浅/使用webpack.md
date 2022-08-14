@@ -1,6 +1,7 @@
+# 自己弄一个用 webpack 搭一个模块开发
 
-# 自己弄一个用webpack搭一个模块开发
-## CSS与Stylus
+## CSS 与 Stylus
+
 ```javascript
 const path = require('path');
 
@@ -18,26 +19,30 @@ module.exports = {
         test: /\.(jpg|png|gif|svg)$/,
         use: [
           'file-loader', // 可以接受并加载任何类型的文件，并且输出到构建目录（只能生成url，给引进来）
-        ]
-      }
-    ]
-  }
-}
+        ],
+      },
+    ],
+  },
+};
 ```
 
 ## Html-webpack-plugin
-目前了解的功能就是每次都会生成新的`index.html`文件，其中的依赖自动引入（根据filename）
+
+目前了解的功能就是每次都会生成新的`index.html`文件，其中的依赖自动引入（根据 filename）
+
 ```javascript
 module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'byte dance!'
+      title: 'byte dance!',
     }),
     new CleanWebpackPlugin(['dist']), // 一个每次都会清除dist目录的插件
-  ]
-}
+  ],
+};
 ```
+
 ## webpack-dev-server
+
 ```javascript
 // package.json
 {
@@ -52,8 +57,11 @@ module.exports = {
   }
 }
 ```
+
 ## webpack-dev-middleware
+
 等于是自己用`express`和`weboack-dev-middleware`中间件自己搭了一个后台,用的不多，就不说了,直接看代码吧。
+
 ```javascript
 const express = require('express');
 const webpack = require('webpack');
@@ -63,16 +71,19 @@ const config = require('./webpack.config.js');
 const compiler = webpack(config);
 const app = express();
 
-app.use(webpackDevMiddleware(compiler, {
-  publicPath: config.output.publicPath
-}));
+app.use(
+  webpackDevMiddleware(compiler, {
+    publicPath: config.output.publicPath,
+  })
+);
 
 app.listen(3000, () => console.log('over'));
-
 ```
 
 ## HMR(Hot Module Replacement)
-`webpack`自带的也有热更新，不过每次修改文件的时候页面会完全刷新，而HMR可以做到部分更新。
+
+`webpack`自带的也有热更新，不过每次修改文件的时候页面会完全刷新，而 HMR 可以做到部分更新。
+
 ```javascript
 const webpack = require('webpack');
 
@@ -87,7 +98,7 @@ module.exports = {
   },
   module: {
     rules: [
-      { 
+      {
         test: /\.styl$/,
         use: ['style-loader', 'css-loader', 'stylus-loader'],
       }
@@ -109,12 +120,15 @@ module.exports = {
 ```
 
 ## 压缩输出
-webpack4开始，只需要讲mode设置为priduction即可。
+
+webpack4 开始，只需要讲 mode 设置为 priduction 即可。
 
 ## tree shaking(摇晃树)
-意思就是把整个项目看作树一棵树，把有用的部分看作树的绿叶，无用的看作枯叶，摇晃树讲枯叶干掉，就减少了无用的部分。
 
-在package.json中增加sideEffects字段，将有可能会影响到全局的文件/模块的路径添加到这个数组中，防止被干掉，其余不会影响到全局的文件，webpack对应的插件就会将无用的部分干掉。
+意思就是  把整个项目看作树一棵树，把有用的部分看作树  的绿叶，无用的看作枯叶， 摇晃树讲枯叶干掉，就减少了无用的部分。
+
+在 package.json 中增加 sideEffects 字段，将有可能会影响到全局的文件/模块的路径添加到这个数组中，防止被干掉，其余不会影响到全局的文件，webpack 对应的插件就会将无用的部分干掉。
+
 ```javascript
 {
   "sideEffects": [
@@ -122,19 +136,21 @@ module.exports = {
   ]
 }
 ```
+
 仅仅这样还不能删除掉无用的代码，还需一个插件：
+
 ```javascript
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  plugins: [
-    new UglifyJSPlugin(),
-  ]
+  plugins: [new UglifyJSPlugin()],
 };
 ```
-再加上它就ok了。
 
-# 方便的resolve
+再加上它就 ok 了。
+
+# 方便的 resolve
+
 ```javascript
 module.exports = {
   ...,

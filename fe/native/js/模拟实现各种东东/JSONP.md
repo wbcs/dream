@@ -1,8 +1,11 @@
-# JSON的原理
+# JSON 的原理
+
 原理很简单，利用`script`标签`src`不受*同源策略*限制，`server`把`data`传入全局函数中返回即可。
+
 > `JSONP`, `JSON Padding` 也就是内联的`JSON`
 
 # 实现
+
 ```js
 class JSONP {
   _queue = [];
@@ -34,7 +37,7 @@ class JSONP {
     this.requestURL = this._parseURL(url, callbackName);
   }
   _parseURL(url, name) {
-    const hasQueryString  = url.includes('?');
+    const hasQueryString = url.includes('?');
     const [queryStr] = url.split('#');
 
     if (!hasQueryString) {
@@ -53,8 +56,9 @@ class JSONP {
       document.head.appendChild(script);
       this._listenToTimeout();
     });
-    Promise.resolve().then(() => {``
-      _queue.forEach(fn => {
+    Promise.resolve().then(() => {
+      ``;
+      _queue.forEach((fn) => {
         try {
           fn();
         } catch (e) {
@@ -93,6 +97,7 @@ jsonp.send();
 ```
 
 # 服务端
+
 ```js
 const http = require('http');
 const querystring = require('querystring');

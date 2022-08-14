@@ -1,4 +1,5 @@
-# linux安装
+# linux 安装
+
 ```sh
 wget https://nodejs.org/dist/v12.13.0/node-v12.13.0-linux-x64.tar.xz
 cd node-v12.13.0
@@ -6,4 +7,5 @@ cd node-v12.13.0
 make
 make install
 ```
-就是如此简单,后两个执行时间有点久，等就ok了； 
+
+就是如此简单,后两个执行时间有点久，等就 ok 了；

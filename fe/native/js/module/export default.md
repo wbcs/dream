@@ -1,7 +1,7 @@
 # default
 
 ```js
-import { a, b } from 'module'
+import { a, b } from 'module';
 ```
 
 在只有 default 导出的时候，ab 均为 undefined。因为解构赋值只有在 VariableDeclaration 才是解构赋值，在 importDeclaration 中就只是个 ImportSpecifier。
@@ -12,12 +12,12 @@ import { a, b } from 'module'
 
 ```js
 // 之前的理解, 这样是等价的
-const hehe = require('-0-')
-import hehe from '-0-'
+const hehe = require('-0-');
+import hehe from '-0-';
 
 // 但是正确的应该是
-const hehe = require('-0-')
-import * as hehe from '-0-'
+const hehe = require('-0-');
+import * as hehe from '-0-';
 ```
 
 # esModuleInterop
@@ -26,9 +26,9 @@ esModuleInterop: false
 
 ```js
 // 会报错没有默认的导出
-import t from '@babel/types'
+import t from '@babel/types';
 // ok
-import * as t from '@babel/types'
+import * as t from '@babel/types';
 ```
 
 esModuleInterop: true 就都 ok，正常使用。
@@ -36,23 +36,23 @@ esModuleInterop: true 就都 ok，正常使用。
 所以这个 flag 对非 esModule 使用 hack：
 
 ```js
-const t = fn(require('@babel/types'))
+const t = fn(require('@babel/types'));
 function fn(module) {
   // 如果他是es模块，则直接返回 module.exports
-  if (module && module.__esModule) return module
-  const res = {}
+  if (module && module.__esModule) return module;
+  const res = {};
   if (module != null) {
     // 否则说明不是es模块
     // 则遍历module.exports，添加属性到空对象中
     // res.default设置为原先的module.exports
     for (var k in module) {
       if (Object.hasOwnProperty.call(module, k)) {
-        res[k] = module[k]
+        res[k] = module[k];
       }
     }
   }
-  res['default'] = module
-  return res
+  res['default'] = module;
+  return res;
 }
 ```
 

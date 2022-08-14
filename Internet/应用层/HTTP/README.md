@@ -1,13 +1,15 @@
-# 超文本传输协议HTTP
+# 超文本传输协议 HTTP
+
 `HTTP` 是面向事务的应用层协议，默认端口是`80`。我们都知道`IP`为主机提供了逻辑通信，`TCP`为主机内的进程提供了逻辑通信，而`HTTP`则是为进程之间通信时，信息的格式做了一个规定。
 
-每次`client`与`server`的交互都是由一个`ASCII`串构成的请求和一个类MIME的响应组成。
+每次`client`与`server`的交互都是由一个`ASCII`串构成的请求和一个类 MIME 的响应组成。
 
 `HTTP`是基于`TCP`的。
 
 > 所谓事务就是，一系列的信息交换，这个交换过程是原子的，要么全做，要么都不做。
 
 # 无状态
+
 所谓`HTTP`的无状态性指的是：两次不同的`http`请求，即使是同一`client`，`server`也无法分辨这两个请求是否是同一个。
 
 之所以要将`HTTP`设计为无状态的原因就是：`HTTP`一般服务的是`WWW`文档，而这种请求是很容易就增加到很大数量级的，如果`HTTP`是有状态的，则需要保存和状态相关的上下文，这样的话服务器的负荷就会大大增加，就不容易去支持大量并发的`HTTP`请求。
@@ -15,16 +17,19 @@
 > 简单来说，就是无状态，简化了`HTTP`服务器的设计，使`http`服务器更容易去支持大量并发的`HTTP`请求。
 
 # 无连接
+
 `HTTP`是建立在`TCP`之上的，`TCP`是面向连接的，那为什么说`HTTP`是无连接的？
 
 所谓`HTTP`无连接，指的是`HTTP`在通信的时候直接使用`TCP`提供的可靠传输功能进行通信，在通信之前不需要再建立`HTTP`的连接。
 
-# HTTP请求道接受所需时间
-`HTTP client`首先和`server`建立TCP连接，三次握手的前两次完成之后（一个RTT），在`client`对`server` 的ack报文中就直接将http请求报文顺带作为TCP的数据部分发送给`server`。`server`接受到请求后返回相应。
+# HTTP 请求道接受所需时间
+
+`HTTP client`首先和`server`建立 TCP 连接，三次握手的前两次完成之后（一个 RTT），在`client`对`server` 的 ack 报文中就直接将 http 请求报文顺带作为 TCP 的数据部分发送给`server`。`server`接受到请求后返回相应。
 
 `time = 2*RTT + 传输文档时间`
 
 # 代理服务器
+
 代理服务器又称**万维网高速缓存**。
 
 `proxy server`将最近的请求和对应的响应都存储在`disk`上，如果后续的请求和暂时存放的请求相同，则直接返回之前的响应，就不需要去再次请求`server`了。
@@ -32,17 +37,22 @@
 > 代理服务器可以在`client`或`server`上工作，也能在中间系统工作。
 
 # 报文结构
-HTTP报文分为：
-+ 请求报文
-+ 响应报文
+
+HTTP 报文分为：
+
+- 请求报文
+- 响应报文
 
 ## 请求报文
+
 分为三部分：
-+ 请求行：`request method | request url | http version`
-+ 首部行: `key: value`
-+ 实体主体
+
+- 请求行：`request method | request url | http version`
+- 首部行: `key: value`
+- 实体主体
 
 ## 响应报文
-+ 状态行：`http version | status code | text`
+
+- 状态行：`http version | status code | text`
 
 其余部分和请求报文一样

@@ -1,7 +1,5 @@
-
 ```js
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 
 const subFlow = createFlow([() => delay(1000).then(() => log('c'))]);
 createFlow([
@@ -46,4 +44,5 @@ function log(...args) {
   console.log('timer:', Date.now() - timer, ...args);
 }
 ```
-> 这个其实和axios的拦截原理很类似。
+
+> 这个其实和 axios 的拦截原理很类似。

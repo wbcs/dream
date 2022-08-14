@@ -1,21 +1,27 @@
 # 用法回顾
+
 ```ts
 class Store {
-  @observable name = 'Bruce'
+  @observable name = 'Bruce';
 }
 const Store = observable({
-  name: 'Bruce'
-})
+  name: 'Bruce',
+});
 ```
 
-其中decorator就是在class被生命的时候，会调用observable，传入三个参数：
+其中 decorator 就是在 class 被生命的时候，会调用 observable，传入三个参数：
+
 ```ts
 // 当然，因为observable可以直接手动调用，所以参数不一定就是class decorator的这几个
-function observable(prototypeOfClass: any, key?: string, descriptor?: Descriptor) {
-}
+function observable(
+  prototypeOfClass: any,
+  key?: string,
+  descriptor?: Descriptor
+) {}
 ```
 
 # 实现
+
 ```ts
 function createObservable(v: any, arg2?: any, arg3: any) {
   // 第二个参数是string，说明是通过decorator的方式使用的
@@ -50,13 +56,14 @@ Object
 ```
 
 # observable.object
+
 ```ts
 interface IObservableFactories {
   object<T = any>(
     props: T,
     decorators?: { [K in keyof T]?: Function },
     optoins?: CreateObservableOptions
-  ): T & IObservableObject
+  ): T & IObservableObject;
 }
 const observableFactories: IObservableFactories = {
   object<T = any>(
@@ -69,9 +76,14 @@ const observableFactories: IObservableFactories = {
     // 没有传入options会返回一个默认的
     const o = asCreateObservableOptions(options);
     const proxy = createDynamicObservableObject({});
-    extendObservableObjectWithProperties(proxy, props, decorators, defaultDecorator)
+    extendObservableObjectWithProperties(
+      proxy,
+      props,
+      decorators,
+      defaultDecorator
+    );
     return proxy;
-  }
+  },
 };
 const defaultCreateObservableOptions = {
   deep: true,
@@ -85,8 +97,8 @@ function asCreateObservableOptions(options?: CreateObservableOptions) {
   }
 }
 function createDynamicObservableObject(base) {
-    const proxy = new Proxy(base, objectProxyTraps)
-    base[$mobx].proxy = proxy
-    return proxy
+  const proxy = new Proxy(base, objectProxyTraps);
+  base[$mobx].proxy = proxy;
+  return proxy;
 }
 ```

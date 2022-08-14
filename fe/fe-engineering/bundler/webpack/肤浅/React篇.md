@@ -1,8 +1,11 @@
 # 目的
-自己搭建一款react脚手架，仅仅实现功能，优化什么的谈不上。以后有能力了再说。
+
+自己搭建一款 react 脚手架，仅仅实现功能，优化什么的谈不上。以后有能力了再说。
 
 # 准备工作
+
 先新建一个目录：
+
 ```shell
   mkdir react-webpack
   cd react-webpack
@@ -12,6 +15,7 @@
 ```
 
 下载一些必要工具：
+
 ```shell
   npm install -D webpack
   npm install -D webpack-cli
@@ -19,16 +23,21 @@
 ```
 
 # 开始搭建
-## 安装react生态工具
-我们搭建的react的脚手架，自然要react的一些依赖了。
+
+## 安装 react 生态工具
+
+我们搭建的 react 的脚手架，自然要 react 的一些依赖了。
+
 ```shell
   npm install --save react
   npm install --save react-dom
   npm install -D prop-types
 ```
 
-## 安装babel
-需要能够识别并运行react，需要babel将jsx转换为js语句。所以接下来必不可少的就是babel了。
+## 安装 babel
+
+需要能够识别并运行 react，需要 babel 将 jsx 转换为 js 语句。所以接下来必不可少的就是 babel 了。
+
 ```shell
   npm install --save @babel/core
   npm install -D babel-loader
@@ -37,27 +46,29 @@
 ```
 
 在根下创建文件`.babelrc`:
+
 ```shell
   touch .babelrc
 ```
 
-我们先将jsx转换为js代码，我们的react基本都是用es2015+来写的，所以还得将其转换为es5代码。所以`.babelrc`内容：
+我们先将 jsx 转换为 js 代码，我们的 react 基本都是用 es2015+来写的，所以还得将其转换为 es5 代码。所以`.babelrc`内容：
+
 ```json
 {
-  "presets": [
-    "@babel/preset-env",
-    "@babel/preset-react",
-  ]
+  "presets": ["@babel/preset-env", "@babel/preset-react"]
 }
 ```
-> 多说一句，babel中的preset的执行顺序是数组的逆序。
 
-## 写一下webpack
-ok，对应的loader都安装ok，接下来要让它工作就得webpack上场了。
+> 多说一句，babel 中的 preset 的执行顺序是数组的逆序。
 
-一开始我们就下载了webpack，所以这里直接写。
+## 写一下 webpack
+
+ok，对应的 loader 都安装 ok，接下来要让它工作就得 webpack 上场了。
+
+一开始我们就下载了 webpack，所以这里直接写。
 
 建立`webpack.config.js`:
+
 ```js
 const path = require('path');
 
@@ -68,18 +79,17 @@ const config = {
     filename: 'js/[name].[hash].js',
   },
   module: {
-    rules: [
-      { test: /\.(js|jsx)$/, use: ['babel-loader'] },
-    ],
+    rules: [{ test: /\.(js|jsx)$/, use: ['babel-loader'] }],
   },
 };
 
 module.exports = config;
 ```
 
-ok,现在js应该可以被打包，然后打开运行了。不过这样很麻烦，直接热加载更爽。所以接下来配置开发server：
+ok,现在 js 应该可以被打包，然后打开运行了。不过这样很麻烦，直接热加载更爽。所以接下来配置开发 server：
 
-先在`package.json`中的scripts中添加：
+先在`package.json`中的 scripts 中添加：
+
 ```json
 {
   "scripts": {
@@ -89,31 +99,37 @@ ok,现在js应该可以被打包，然后打开运行了。不过这样很麻烦
 }
 ```
 
-ok!现在`npm start`, 哦等等，没html文件你运行你🐴呢。还得搞个html模板文件，我这里在根目录下弄：
+ok!现在`npm start`, 哦等等，没 html 文件你运行你 🐴 呢。还得搞个 html 模板文件，我这里在根目录下弄：
+
 ```shell
   touch index.html
 ```
+
 index.html:
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>React-Webpack</title>
-</head>
-<body>
-  <div id="root"></div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>React-Webpack</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
 ```
 
-这样肯定还不行。还需要一个webpack插件： `html-webpack-plugin`
+这样肯定还不行。还需要一个 webpack 插件： `html-webpack-plugin`
+
 ```shell
   npm install -D html-webpack-plugin
 ```
+
 webpack.config.js:
+
 ```js
 const path = require('path');
 const HtmlWebapckPlugin = require('html-webpack-plugin');
@@ -125,19 +141,17 @@ const config = {
     filename: '/js/[name].[hash].js',
   },
   module: {
-    rules: [
-      { test: /\.(js|jsx)$/, use: ['babel-loader'] },
-    ],
+    rules: [{ test: /\.(js|jsx)$/, use: ['babel-loader'] }],
   },
   plugins: [
     new HtmlWebapckPlugin({
       template: './index.html',
       title: 'hehe ~~~',
     }),
-  ]
+  ],
 };
 
 module.exports = config;
 ```
 
-ok👌，大功告成，可以写react了。
+ok👌，大功告成，可以写 react 了。

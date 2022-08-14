@@ -10,14 +10,14 @@ function querystring(str) {
   const substr = str.slice(start, end);
   return substr
     .split('&')
-    .map(keyVal => keyVal.split('=').map(decodeURIComponent))
+    .map((keyVal) => keyVal.split('=').map(decodeURIComponent))
     .reduce((prev, [key, val]) => {
       if (key === '') return res;
       if (key in prev) {
         const arrOrVal = prev[key];
-        prev[key] = Array.isArray(arrOrVal) ?
-          [...arrOrVal, val] :
-          [arrOrVal, val];
+        prev[key] = Array.isArray(arrOrVal)
+          ? [...arrOrVal, val]
+          : [arrOrVal, val];
       } else {
         prev[key] = val;
       }

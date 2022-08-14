@@ -1,12 +1,16 @@
 # camera
+
 三要素之一，有两种`camera`：
-+ 正交投影`camera`：`new THREE.PerspectiveCamera();`
-+ 透视投影`camera`：new 
 
-区别：**正交投影camera**渲染出来的图形无论远近大小一样；**透视投影**则跟人类视角类似，近大远小。
+- 正交投影`camera`：`new THREE.PerspectiveCamera();`
+- 透视投影`camera`：new
 
-# 透视投影camera
-这种camera更接近现实：
+区别：**正交投影 camera**渲染出来的图形无论远近大小一样；**透视投影**则跟人类视角类似，近大远小。
+
+# 透视投影 camera
+
+这种 camera 更接近现实：
+
 ```js
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far, zoom);
 // camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -14,12 +18,14 @@ const camera = new THREE.PerspectiveCamera(fov, aspect, near, far, zoom);
 
 ![](https://user-gold-cdn.xitu.io/2019/3/27/169be0b2fa6404ab?w=1730&h=1086&f=png&s=797328)
 
-> 但是我在使用的时候，fov其实是zoom，zoom实际不存在.也就是：`new THREE.PerspectiveCamera(zoom, aspect, near, far);`
+> 但是我在使用的时候，fov 其实是 zoom，zoom 实际不存在.也就是：`new THREE.PerspectiveCamera(zoom, aspect, near, far);`
 
 ![](https://user-gold-cdn.xitu.io/2019/3/27/169be0f07330efdc?w=1618&h=1282&f=png&s=123606)
 
-## 正交投影camera
-在使用这种camera的时候，由于渲染物体的大小都是一样的，所以不关心什么长宽比，只需要一个被渲染的方块区域即可。
+## 正交投影 camera
+
+在使用这种 camera 的时候，由于渲染物体的大小都是一样的，所以不关心什么长宽比，只需要一个被渲染的方块区域即可。
+
 ```js
 const camera = new THREE.OrthoGraphicCamera(
   left,
@@ -41,8 +47,10 @@ const camera = new THREE.OrthoGraphicCamera(
 
 ![](https://user-gold-cdn.xitu.io/2019/3/27/169be1d093f4df66?w=1108&h=760&f=png&s=179023)
 
-# 改变camera的视角
+# 改变 camera 的视角
+
 按住鼠标。可以拖动视角，，有点卡
+
 ```js
 componentDidMount() {
   const cb = (e) => {

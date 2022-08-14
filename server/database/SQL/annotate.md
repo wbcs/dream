@@ -1,5 +1,7 @@
 # 分组查询
-+ `SELECT * FROM table_name;`:
+
+- `SELECT * FROM table_name;`:
+
 ```
 +-----+---------+-------+------------+
 | id  | site_id | count | date       |
@@ -15,13 +17,16 @@
 |   9 |       3 |   201 | 2016-05-17 |
 +-----+---------+-------+------------+
 ```
+
 我想要查找各个 site_id 对应的总 count：
+
 ```sql
 SELECT site_id, SUM(count) AS sums
 FROM `table_name` GROUP BY site_id;
 ```
 
 对应到 python 的 orm：
+
 ```py
 from django.db.models import Count
 

@@ -1,4 +1,5 @@
 # reactive
+
 ```ts
 function createGetter(isReadonly) {
   return function get(target, key, receiver) {
@@ -9,7 +10,7 @@ function createGetter(isReadonly) {
     if (isRef(res)) {
       return res.value;
     }
-    track(target, "get" /* GET */, key);
+    track(target, 'get' /* GET */, key);
     return isObject(res)
       ? isReadonly
         ? // need to lazy access readonly and reactive here to avoid
@@ -24,32 +25,43 @@ const mutableHandlers = {
   set,
   deleteProperty,
   has,
-  ownKeys
+  ownKeys,
 };
 // target: reactive(target)
-// rawToReactive = new WeakMap()  
+// rawToReactive = new WeakMap()
 // reactiveToRaw = new WeakMap()  保存着所有proxy
 // mutableHandlers 监听一般对象所用的handler
 // mutableCollectionHandlers 监听set、map、weakset、weakmap所用的handler
-return createReactiveObject(target, rawToReactive, reactiveToRaw, mutableHandlers, mutableCollectionHandlers);
+return createReactiveObject(
+  target,
+  rawToReactive,
+  reactiveToRaw,
+  mutableHandlers,
+  mutableCollectionHandlers
+);
 
-
-function createReactiveObject(target, toProxy, toRaw, baseHandlers, collectionHandlers) {
+function createReactiveObject(
+  target,
+  toProxy,
+  toRaw,
+  baseHandlers,
+  collectionHandlers
+) {
   if (!isObject(target)) {
     return target;
   }
   // target already has corresponding Proxy
   let observed = toProxy.get(target);
   if (observed !== void 0) {
-      return observed;
+    return observed;
   }
   // target is already a Proxy
   if (toRaw.has(target)) {
-      return target;
+    return target;
   }
   // only a whitelist of value types can be observed.
   if (!canObserve(target)) {
-      return target;
+    return target;
   }
   const handlers = collectionTypes.has(target.constructor)
     ? collectionHandlers

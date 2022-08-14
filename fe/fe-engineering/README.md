@@ -19,7 +19,7 @@
 ts 引入 `polyfill` 的方式是直接在入口文件中引入 core-js:
 
 ```js
-import "core-js";
+import 'core-js';
 ```
 
 而 `babel7` 可以根据配置，使用 `@babel/compat-data` 的数据来针对地做语法转换和 `API` 的 `polyfill`。

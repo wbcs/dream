@@ -1,4 +1,5 @@
 # 基础命令
+
 ```sh
 # string
 > set key value
@@ -39,17 +40,21 @@
 # 清空所有
 flushall
 ```
-ok，redis中的数据类型有：
-+ string: 最大512M
-+ list: 最长 2**32 - 1 个元素
-+ hash: 最多 2**32 - 1 个 key-value
-+ set: 哈希表实现 set/get O(1)，同样的也最多只能有 2**32 - 1 个元素
-+ zset: 比 set 多个 score 用作排序的权重 
+
+ok，redis 中的数据类型有：
+
+- string: 最大 512M
+- list: 最长 2\*\*32 - 1 个元素
+- hash: 最多 2\*\*32 - 1 个 key-value
+- set: 哈希表实现 set/get O(1)，同样的也最多只能有 2\*\*32 - 1 个元素
+- zset: 比 set 多个 score 用作排序的权重
 
 # 数据库
-redis 支持多个数据库，每个数据库的数据不能共享。数据库的名字是从0-16(default)，不可自定。
 
-flushall 会清空所有 redis 中的数据, 看起来 redis的数据库更像是 namespace。
+redis 支持多个数据库，每个数据库的数据不能共享。数据库的名字是从 0-16(default)，不可自定。
+
+flushall 会清空所有 redis 中的数据, 看起来 redis 的数据库更像是 namespace。
 
 # 连接远程
+
 redis -h hostname -p port -a password

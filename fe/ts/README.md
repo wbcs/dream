@@ -5,7 +5,7 @@
 - string => UnionOfLetter
 
 ```ts
-const string = "wbcs";
+const string = 'wbcs';
 
 // 23 最多递归层貌似
 type CharUnion<S extends string> = S extends `${infer AlphaLetter}${infer Rest}`
@@ -29,11 +29,11 @@ function fn(arg: ITest) {
 }
 fn({
   age: 1,
-  name: "wb", // 报错
+  name: 'wb', // 报错
 });
 const obj = {
   age: 1,
-  name: "wb",
+  name: 'wb',
 };
 fn(obj); // okay
 ```

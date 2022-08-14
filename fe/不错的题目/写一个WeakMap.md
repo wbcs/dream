@@ -4,27 +4,27 @@ function isPrimitive(value) {
     ['string', 'number', 'symbol', 'bigint', 'boolean', 'undefined'].includes(
       typeof value
     ) || value === null
-  )
+  );
 }
 
 class _WeakMap {
   constructor() {
-    this._key = Symbol('weak-map')
+    this._key = Symbol('weak-map');
   }
   get(key) {
-    return key[this._key]
+    return key[this._key];
   }
   set(key, value) {
     if (isPrimitive(key)) {
-      throw new Error('Invalid value used as weak map key')
+      throw new Error('Invalid value used as weak map key');
     }
     Object.defineProperty(key, this._key, {
       configurable: true,
       enumerable: false,
       get() {
-        return value
-      }
-    })
+        return value;
+      },
+    });
   }
 }
 ```

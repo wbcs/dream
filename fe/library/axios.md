@@ -1,8 +1,11 @@
 # 前言
+
 axios 文档我都没看过，都是跟着感觉瞎玩的，什么对请求、响应的拦截好奇他是咋写的。
 
 # axios.request
+
 好像所有的方法都是用 `request` 封装而成的。
+
 ```js
 class Axios {
   constructor(insConfig) {
@@ -22,18 +25,16 @@ class Axios {
       ...this.defaults,
       ...config,
     };
-    config.method = config.method
-      ? config.method.toLowerCase()
-      : 'get';
+    config.method = config.method ? config.method.toLowerCase() : 'get';
 
     // 分别是真正请求数据的cb，null是因为fulfilled和reject总是成对出现
     const works = [dispatchRequest, null];
     const promise = Promise.resolve(config);
-    this.interceptors.request.forEach(interceptor => {
+    this.interceptors.request.forEach((interceptor) => {
       if (!interceptor) return;
       works.unshift(interceptor.fulfilled, interceptor.rejected);
     });
-    this.interceptors.response.forEach(interceptor => {
+    this.interceptors.response.forEach((interceptor) => {
       if (!interceptor) return;
       works.push(interceptor.fulfilled, interceptor.rejected);
     });
@@ -47,19 +48,23 @@ class Axios {
   }
 }
 ```
+
 `request` 通过把 `interceptor` 的 `request` 放在 `dispatchRequest` 之前， `response` 放在之后，然后从头开始，依次将 `config` 流过每个 `request` ,然后到达 `dispatchRequest` 。
 
 得到结果后， 又将 `res` 依次流过每个 `response interceptor`。这样就实现了对请求、响应的拦截。
 
 ## interceptors
+
 ```js
 // 都是传入一对
 axios.interceptors.request.use(fullfilled, rejected);
 axios.interceptors.response.use(fullfilled, rejected);
 ```
+
 > `request` 注册的 `callback` 以 `stack` 顺序执行
 
 > `response` 以 `queue` 顺序执行
+
 ```js
 class InterceptorManager {
   constructor() {
@@ -80,12 +85,14 @@ class InterceptorManager {
 }
 ```
 
-
 # dispatchRequest
+
 真正发送请求的部分。 `node` 使用 `http` ，浏览器使用 `xhr` 。
 
 `defaults.adapter` 为默认的请求部分，先来看一下（ `node` 回头有时间了再看吧）。
+
 ## adapter 之 xhr
+
 ```js
 function xhr(config) {
   return new Promise((resolve, reject) => {
@@ -107,11 +114,7 @@ function xhr(config) {
 
     request.open(
       config.method.toUpperCase(),
-      buildURL(
-        config.url,
-        config.params,
-        config.paramsSerializer
-      ),
+      buildURL(config.url, config.params, config.paramsSerializer),
       true
     );
 
@@ -120,18 +123,24 @@ function xhr(config) {
     request.onreadystatechange = function handleReadyStateChange() {
       if (!request || request.readyState !== 4) return;
       // status为0，没有responseURL，或者responseURL为file://
-      if (request.status === 0 || !request.responseURL || request.responseURL.indexOf('file:') === 0) {
+      if (
+        request.status === 0 ||
+        !request.responseURL ||
+        request.responseURL.indexOf('file:') === 0
+      ) {
         return;
       }
       // 没有responseType返回或者responseType是text都返回responseText
-      const responseData = !config.responseType || config.responseType === 'text'
-        ? request.responseText
-        : request.response;
+      const responseData =
+        !config.responseType || config.responseType === 'text'
+          ? request.responseText
+          : request.response;
 
       // getAllResponseHeaders返回的是string，需要手动解析
-      const responseHeaders = 'getAllResponseHeaders' in request
-        ? parseHeaders(request.getAllResponseHeaders())
-        : null;
+      const responseHeaders =
+        'getAllResponseHeaders' in request
+          ? parseHeaders(request.getAllResponseHeaders())
+          : null;
       // 在进一步判断返回、状态码后决定是resolve还是reject
       setttle(resolve, reject, {
         headers: responseHeaders,
@@ -162,9 +171,9 @@ function xhr(config) {
     };
 
     /**
-    *   这里还涉及了对xsrf header的设置
-    *   只有标准浏览器支持，暂时略过
-    */
+     *   这里还涉及了对xsrf header的设置
+     *   只有标准浏览器支持，暂时略过
+     */
 
     if (config.withCredentials) {
       request.withCredentials = true;
@@ -176,10 +185,10 @@ function xhr(config) {
       try {
         request.responseType = config.responseType;
       } catch (e) {
-        /** 
+        /**
          *  浏览器引发的预期domException与xmlhttpRequest级别2不兼容。
          *  但是，对于“json”类型，这可以被禁止，因为它可以由默认的“transformResponse”函数解析。
-        */
+         */
         if (config.responseTpe !== 'json') {
           throw e;
         }
@@ -195,11 +204,11 @@ function xhr(config) {
     }
 
     if ('setRequestHeader' in request) {
-      requestHeaders.forEach(header => {
+      requestHeaders.forEach((header) => {
         if (!requestData && header.toLowerCase() === 'content-type') {
           delete requestHeaders[header];
         } else {
-          request.setRequestHeader(header, requestHeaders[header])
+          request.setRequestHeader(header, requestHeaders[header]);
         }
       });
     }
@@ -212,30 +221,36 @@ function xhr(config) {
   });
 }
 ```
-ok, axios 关于如何发起请求的部分大概就这么多了，除了添加xsrf headers和取消的部分。
+
+ok, axios 关于如何发起请求的部分大概就这么多了，除了添加 xsrf headers 和取消的部分。
 
 # tips
-## 如何取消请求，以及何时会触发onabort，浏览器取消和手动取消请求如何区分？
+
+## 如何取消请求，以及何时会触发 onabort，浏览器取消和手动取消请求如何区分？
+
 取消请求的情况：
-+ 超时浏览器自动取消
-+ 链接跳转浏览器自动取消：这种情况只在 `Chrome` 奏效 `IE、Firefox` 不会触发 `onabort` ，但是会触发 `onreadystatechange` 事件。
-+ `xhr.abort();`
+
+- 超时浏览器自动取消
+- 链接跳转浏览器自动取消：这种情况只在 `Chrome` 奏效 `IE、Firefox` 不会触发 `onabort` ，但是会触发 `onreadystatechange` 事件。
+- `xhr.abort();`
 
 怎么判断是浏览器取消，还是手动取消呢？
 
-两者都会调用 `onabort` 事件，区别是手动取消 `xhr` 的各种属性已经被清掉（ `status、readystate` 都为0），而浏览器触发 `onabort` 时，这些属性依然存在。
+两者都会调用 `onabort` 事件，区别是手动取消 `xhr` 的各种属性已经被清掉（ `status、readystate` 都为 0），而浏览器触发 `onabort` 时，这些属性依然存在。
 
 `JQuery` 中是通过 `xhr.statusText = 'abort'`, 这样如果是 `abort` 则是手动取消， 浏览器取消，则 `statusText` 会是 `timeout`。
 
 > `fetch` 目前没有取消请求对应的 `API` ， 所以暂时不能取消。还有一点，就是 `xhr` 无论是请求成功与否都可以取消，但是 `fetch` (自己封装 `promise` 实现取消)成功之后就不能取消了。
 
 # 总结
+
 学到的点：
-+ `request.getAllResponseHeaders`返回的是纯`string`，需要手动`split`
-+ 设置`token`：`headers.Authorization = 'Basic ' + btoa(username + ':' + password);`
-+ `content-type`：
-  + 如果没有数据要传送，最好干掉这个头部
-  + 如果传输的数据的 `formData` ，也干掉这个头部让浏览器去设置
-+ 除了`progress`，有的浏览器还支持上传进度`request.upload.onprogress`
-+ 手动取消请求和浏览器取消的情况的区别
-+ `fetch` 和 `xhr` 的区别，以及以 `promise` 实现 `fetch` 的类库和真正的 `fetch` 之间的差距
+
+- `request.getAllResponseHeaders`返回的是纯`string`，需要手动`split`
+- 设置`token`：`headers.Authorization = 'Basic ' + btoa(username + ':' + password);`
+- `content-type`：
+  - 如果没有数据要传送，最好干掉这个头部
+  - 如果传输的数据的 `formData` ，也干掉这个头部让浏览器去设置
+- 除了`progress`，有的浏览器还支持上传进度`request.upload.onprogress`
+- 手动取消请求和浏览器取消的情况的区别
+- `fetch` 和 `xhr` 的区别，以及以 `promise` 实现 `fetch` 的类库和真正的 `fetch` 之间的差距

@@ -1,8 +1,11 @@
 # RESTful
-REST，Representational State Transfer, 表现层状态转换。它是一种规范，凡是符合它规范的设计都是RESTful API。
+
+REST，Representational State Transfer, 表现层状态转换。它是一种规范，凡是符合它规范的设计都是 RESTful API。
 
 # 一个例子
-过去对CRUD的设计：
+
+过去对 CRUD 的设计：
+
 ```
 POST /user/wb
 ```

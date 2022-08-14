@@ -1,9 +1,11 @@
 # createRoot
+
 ```js
 const root = ReactDOM.unstable_createRoot(container);
 ```
 
 ## root.render
+
 ```js
 const work = root.render(<Component />);
 
@@ -13,6 +15,7 @@ work.then(() => {
 ```
 
 ## root.createBatch
+
 ```js
 const batch = root.createBatch();
 batch.render(Component);
@@ -23,13 +26,16 @@ batch.then(cb);
 batch.commit();
 ```
 
-由root.createBatch创建的batch在commit的时候各自之间相互不会影响。
+由 root.createBatch 创建的 batch 在 commit 的时候各自之间相互不会影响。
 
-而且对于同一个batch的不同render能够实现批处理。
-> batch在完成时会调用then的回调，这个执行回调的过程是同步的。而执行then的时机取决于什么时候执行commit，一旦一个batch 被commit就会同步执行then
+而且对于同一个 batch 的不同 render 能够实现批处理。
 
-## root.render和 batch.render的区别
-root.render在flush之后就会立即调用work.then的回调，这个时候DOM已经被更新。
+> batch 在完成时会调用 then 的回调，这个执行回调的过程是同步的。而执行 then 的时机取决于什么时候执行 commit，一旦一个 batch 被 commit 就会同步执行 then
+
+## root.render 和 batch.render 的区别
+
+root.render 在 flush 之后就会立即调用 work.then 的回调，这个时候 DOM 已经被更新。
+
 ```jsx
 const root = ReactDOM.unstable_createRoot(document.querySelector('#root'));
 
@@ -41,7 +47,8 @@ work.then(() => {
 });
 ```
 
-而batch.render在flush之后必须要等到batch.commit()之后才会将change映射到DOM上，执行then的回调。
+而 batch.render 在 flush 之后必须要等到 batch.commit()之后才会将 change 映射到 DOM 上，执行 then 的回调。
+
 ```jsx
 const root = ReactDOM.unstable_createRoot(document.querySeletor('#root'));
 const batch = root.createBatch();
@@ -66,11 +73,12 @@ work.then(() => {
 ```
 
 完整的流程就是：
-+ root.render: `createRoot => root.render => sometimes call flush => component render => dom update => work.then`
-+ batch.render: `createRoot => root.createBatch => batch.render => somtimes call flush => component render => batch.then => call batch.commit at sometimes => dom update => work.then`
 
-其中，commit和flush都会渲染component，如果commit的时候组件还未渲染，则立即（sync）渲染，否则跳过渲染的过程直接update dom。完事儿之后work.then。
+- root.render: `createRoot => root.render => sometimes call flush => component render => dom update => work.then`
+- batch.render: `createRoot => root.createBatch => batch.render => somtimes call flush => component render => batch.then => call batch.commit at sometimes => dom update => work.then`
 
-调用commit会先执行work.then然后才执行batch.then
+其中，commit 和 flush 都会渲染 component，如果 commit 的时候组件还未渲染，则立即（sync）渲染，否则跳过渲染的过程直接 update dom。完事儿之后 work.then。
 
-> work.then一定是组件渲染完毕并且更新到DOM上。而batch.then则是组件渲染完毕就会执行。而且如果同时存在root.render()和batch.render()以后者为准，不再去执行root.render。在有多个batch.render的情况下，work.then会在这些batch全部都over之后执行
+调用 commit 会先执行 work.then 然后才执行 batch.then
+
+> work.then 一定是组件渲染完毕并且更新到 DOM 上。而 batch.then 则是组件渲染完毕就会执行。而且如果同时存在 root.render()和 batch.render()以后者为准，不再去执行 root.render。在有多个 batch.render 的情况下，work.then 会在这些 batch 全部都 over 之后执行

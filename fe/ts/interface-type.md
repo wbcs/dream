@@ -1,49 +1,58 @@
-# type可以interface不可
-+ type可以实现类型重命名：
+# type 可以 interface 不可
+
+- type 可以实现类型重命名：
+
 ```ts
-type AliasNumber = number
+type AliasNumber = number;
 ```
-+ 联合类型：
+
+- 联合类型：
+
 ```ts
 interface Dog {
-  woof()
+  woof();
 }
 interface Cat {
-  miao()
+  miao();
 }
-type Animal = Dog & Cat
+type Animal = Dog & Cat;
 const animal: Animal = {
-  woof(){},
-  miao(){}
-}
-type CatOrDog = Dog | Cat
+  woof() {},
+  miao() {},
+};
+type CatOrDog = Dog | Cat;
 ```
-+ 暂存某变量的类型：
+
+- 暂存某变量的类型：
+
 ```ts
-const obj = { name: 'wbcs' }
-type TVar = typeof obj
+const obj = { name: 'wbcs' };
+type TVar = typeof obj;
 // 等同于
 type TVar = {
-  name: string
-}
+  name: string;
+};
 ```
-+ 鼠标移到alias上会显示字面量，而interface则只是显示interface的名字：
+
+- 鼠标移到 alias 上会显示字面量，而 interface 则只是显示 interface 的名字：
 
 ![](./assets/type.png)
 ![](./assets/interface.png)
 
-# interface可，type不可
-+ 声明合并：
+# interface 可，type 不可
+
+- 声明合并：
+
 ```ts
 interface Person {
-  age: number
+  age: number;
 }
 interface Person {
-  name: string
+  name: string;
 }
 // Person 是
 interface Person {
-  age: number
-  name: string
+  age: number;
+  name: string;
 }
 ```

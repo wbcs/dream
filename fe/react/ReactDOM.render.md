@@ -1,57 +1,55 @@
 # 写在前面的话
+
 看源码很多时候不知道从何看起，现在知道了，`ReactDOM.render()`是一个入口方法。`React`的一切的一切，除了引入包执行代码以外，其他的一切都是从这个方法开始的。
 
-我要从`ReactDOM.render()`一直到DOM挂载到真正的页面，看一看到底发生了啥。
+我要从`ReactDOM.render()`一直到 DOM 挂载到真正的页面，看一看到底发生了啥。
 
 **声明：以下大多数代码都被我精简过了。**
 
 # ReactDOM.render
+
 先来写个例子：
+
 ```js
 function Test() {
-  return <div onClick={() => alert('test')}>
-    <span>123</span>
-  </div>
+  return (
+    <div onClick={() => alert('test')}>
+      <span>123</span>
+    </div>
+  );
 }
 
 function App() {
-  const [counter, setCounter] = useState(0)
+  const [counter, setCounter] = useState(0);
   return (
     <div onClick={() => setCounter(counter + 1)} id="hehe">
       counter {counter} times!
       <Test />
     </div>
-  )
+  );
 }
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('root')
-)
+ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
 先来看看`ReactDOM.render`是个啥：
+
 ```js
 const ReactDOM = {
   render(element, container, callback) {
-    return legacyRenderSubtreeIntoContainer(
-      element,
-      container,
-      callback,
-    );
+    return legacyRenderSubtreeIntoContainer(element, container, callback);
   },
 };
 ```
+
 > 很简单，我很费解为什么你要这么写 ，我草， 这么写跟直接写在这有啥区别，还多调用一次函数。效率更低。
 
 ## legacyRenderSubtreeIntoContainer
+
 不废话了
+
 ```js
-function legacyRenderSubtreeIntoContainer(
-  children,
-  container,
-  callback,
-) {
+function legacyRenderSubtreeIntoContainer(children, container, callback) {
   // mount的时候没有这个属性，值为undefined
   let root = container._reactRootContainer;
   let fiberRoot;
@@ -60,12 +58,12 @@ function legacyRenderSubtreeIntoContainer(
     // 得到一个root, 在这个过程中创建了根fiber，也就是下面那行的fiberRoot
     root = container._reactRootContainer = legacyCreateRootFromDOMContainer(
       container,
-      false,
+      false
     );
     fiberRoot = root._internalRoot;
     if (typeof callback === 'function') {
       const originalCallback = callback;
-      callback = function() {
+      callback = function () {
         // 省略得到context，值就是null
         originalCallback.call(null);
       };
@@ -77,12 +75,15 @@ function legacyRenderSubtreeIntoContainer(
   return getPublicRootInstance(fiberRoot);
 }
 ```
+
 > `mount`的时候一定会进入`if`中，下面具体看看干啥了
 
 ## legacyCreateRootFromDOMContainer
+
 这个函数就不写出来了，说一下它的作用：
 
 它创建了一个`fiberRoot`，也就是`React`调度过程中保存了许多信息的一个对象。还创建了`rootFiber`。`legacyCreateRootFromDOMContainer`执行了一下几个函数。
+
 ```js
 function ReactSyncRoot(container) {
   this._internalRoot = createFiberRoot(container, false, false);
@@ -92,52 +93,56 @@ function createFiberRoot(containerInfo) {
   // stateNode is any.
   var uninitializedFiber = new FiberNode(HostRoot, null, null, 4);
   var root = {
-      current: uninitializedFiber,
-      containerInfo: containerInfo,
-      pendingChildren: null,
+    current: uninitializedFiber,
+    containerInfo: containerInfo,
+    pendingChildren: null,
 
-      earliestPendingTime: NoWork,
-      latestPendingTime: NoWork,
-      earliestSuspendedTime: NoWork,
-      latestSuspendedTime: NoWork,
-      latestPingedTime: NoWork,
+    earliestPendingTime: NoWork,
+    latestPendingTime: NoWork,
+    earliestSuspendedTime: NoWork,
+    latestSuspendedTime: NoWork,
+    latestPingedTime: NoWork,
 
-      pingCache: null,
+    pingCache: null,
 
-      didError: false,
+    didError: false,
 
-      pendingCommitExpirationTime: NoWork,
-      finishedWork: null,
-      timeoutHandle: noTimeout,
-      context: null,
-      pendingContext: null,
-      hydrate: false,
-      nextExpirationTimeToWorkOn: NoWork,
-      expirationTime: NoWork,
-      firstBatch: null,
-      nextScheduledRoot: null,
+    pendingCommitExpirationTime: NoWork,
+    finishedWork: null,
+    timeoutHandle: noTimeout,
+    context: null,
+    pendingContext: null,
+    hydrate: false,
+    nextExpirationTimeToWorkOn: NoWork,
+    expirationTime: NoWork,
+    firstBatch: null,
+    nextScheduledRoot: null,
 
-      interactionThreadID: tracing.unstable_getThreadID(),
-      memoizedInteractions: new Set(),
-      pendingInteractionMap: new Map()
-    };
+    interactionThreadID: tracing.unstable_getThreadID(),
+    memoizedInteractions: new Set(),
+    pendingInteractionMap: new Map(),
+  };
 
   uninitializedFiber.stateNode = root;
 
   return root;
 }
 ```
+
 可以看到`createFiberRoot`中还创建了`fiberROot`。其中`root`就是`fiberRoot`，`uninitializedFiber`是`rootFiber`。它们的区别是：
 
-+ rootFiber：比较好理解，它是一个`fiber`，一个根`fiber`，React16的调度算法`Fiber`的数据结构就是`fiber`。React中每一个元素（原生html或者组件）都对应一个`fiber`，这个`fiber`就是整个`fiber`树的根。
-+ fiberRoot：它是整个调度过程中的一个保存许多重要信息的`root`对象。
+- rootFiber：比较好理解，它是一个`fiber`，一个根`fiber`，React16 的调度算法`Fiber`的数据结构就是`fiber`。React 中每一个元素（原生 html 或者组件）都对应一个`fiber`，这个`fiber`就是整个`fiber`树的根。
+- fiberRoot：它是整个调度过程中的一个保存许多重要信息的`root`对象。
 
 > 它们是一个循环引用。
+
 ```js
 fiberRoot.current = rootFiber;
 rootFiber.stateNode = fiberRoot;
 ```
-附上fiberNode的结构：
+
+附上 fiberNode 的结构：
+
 ```js
 function FiberNode(tag, pendingProps, key, mode) {
   // Instance
@@ -149,16 +154,16 @@ function FiberNode(tag, pendingProps, key, mode) {
 
   // Fiber
   this.return = null; // 父Fiber结点
-  this.child = null;  // 第一个子Fiber
+  this.child = null; // 第一个子Fiber
   this.sibling = null; // 第一个右兄弟Fiber
   this.index = 0;
 
   this.ref = null;
 
   this.pendingProps = pendingProps;
-  this.memoizedProps = null;  // 存储元素/组件的props
+  this.memoizedProps = null; // 存储元素/组件的props
   this.updateQueue = null;
-  this.memoizedState = null;  // 存储组件的state，元素为null。class组件就是state，function组件则是由hooks对象组成的单链表
+  this.memoizedState = null; // 存储组件的state，元素为null。class组件就是state，function组件则是由hooks对象组成的单链表
   this.contextDependencies = null;
 
   this.mode = mode;
@@ -175,7 +180,8 @@ function FiberNode(tag, pendingProps, key, mode) {
 
   this.alternate = null;
 
-  if (enableProfilerTimer) {  // 一般都是true
+  if (enableProfilerTimer) {
+    // 一般都是true
     this.actualDuration = Number.NaN;
     this.actualStartTime = Number.NaN;
     this.selfBaseDuration = Number.NaN;
@@ -202,10 +208,13 @@ function FiberNode(tag, pendingProps, key, mode) {
   }
 }
 ```
-一句话总结`legacyCreateRootFromDOMContainer`，它创建了`fiberRoot`和`rootFiber`。当然其他子元素都会在执行的之后递归调用，等到进来render就已经都创建好了。
+
+一句话总结`legacyCreateRootFromDOMContainer`，它创建了`fiberRoot`和`rootFiber`。当然其他子元素都会在执行的之后递归调用，等到进来 render 就已经都创建好了。
 
 # updateContainer
+
 `legacyCreateRootFromDOMContainer`之后，取出我们刚刚创建的`fiberRoot`跟`rootFiber`（代码中的`root`）。
+
 ```js
   // 干掉container里的元素，return new ReactSyncRoot(container, false, false)
   // 得到一个root, 在这个过程中创建了根fiber，也就是下面那行的fiberRoot
@@ -232,11 +241,22 @@ return getPublicRootInstance(fiberRoot);
 function updateContainer(element, container, parentComponent, callback) {
   var currentTime = requestCurrentTime(); // 得到一个currentTime, 用这个值来计算expirationTime。这个值具体是什么意思不用管，重要的expirationTIme
   // expirationTime越大优先级越高
-  var expirationTime = computeExpirationForFiber(currentTime, container.current);
-  return updateContainerAtExpirationTime(element, container, parentComponent, expirationTime, callback);
+  var expirationTime = computeExpirationForFiber(
+    currentTime,
+    container.current
+  );
+  return updateContainerAtExpirationTime(
+    element,
+    container,
+    parentComponent,
+    expirationTime,
+    callback
+  );
 }
 ```
+
 得到了优先级`expirationTime`，之后又干了一些无关紧要的初始化工作不管他，直接看下面：
+
 ```js
 // 完了会执行这两个函数
 // update是一个对象，存储了一些和更新有关的信息
@@ -244,7 +264,9 @@ function updateContainer(element, container, parentComponent, callback) {
 enqueueUpdate(current$$1, update);
 scheduleWork(current$$1, expirationTime);
 ```
+
 ## enqueueUpdate
+
 ```js
 function enqueueUpdate(fiber, update) {
   // Update queues are created lazily.
@@ -268,7 +290,7 @@ function enqueueUpdate(fiber, update) {
         firstEffect: null,
         lastEffect: null,
         firstCapturedEffect: null,
-        lastCapturedEffect: null
+        lastCapturedEffect: null,
       };
     }
   }
@@ -292,10 +314,13 @@ function appendUpdateToQueue(queue, update) {
   queue.lastUpdate = update;
 }
 ```
+
 经过删减看起来就简洁多了。总结一下`enqueueUpdate`，它其实就干了一件事，创建`rootFiber.updateQueue`，这个`updateQueue`中的`baseState`保存了自己的`memoizedState`，把`update`对象保存到自己的属性中。
 
 ## scheduleWork
+
 开始调度工作
+
 ```js
 function scheduleWork(fiber, expirationTime) {
   var root = scheduleWorkToRoot(fiber, expirationTime);
@@ -304,11 +329,13 @@ function scheduleWork(fiber, expirationTime) {
   // isCommitting应该是如果是之后更新操作，提交时会为ture
   // nextRoot其实是null
   if (
-  // If we're in the render phase, we don't need to schedule this root
-  // for an update, because we'll do it before we exit...
-  !isWorking || isCommitting$1 ||
-  // ...unless this is a different root than the one we're rendering.
-  nextRoot !== root) {
+    // If we're in the render phase, we don't need to schedule this root
+    // for an update, because we'll do it before we exit...
+    !isWorking ||
+    isCommitting$1 ||
+    // ...unless this is a different root than the one we're rendering.
+    nextRoot !== root
+  ) {
     var rootExpirationTime = root.expirationTime;
     requestWork(root, rootExpirationTime);
   }
@@ -316,15 +343,35 @@ function scheduleWork(fiber, expirationTime) {
 // ....
 // 执行了一堆看不懂的代码，重要的是会执行这个
 // 相当于document.createElement
-var instance = createInstance(type, newProps, rootContainerInstance, currentHostContext, workInProgress);
+var instance = createInstance(
+  type,
+  newProps,
+  rootContainerInstance,
+  currentHostContext,
+  workInProgress
+);
 // 把children都弄进去
 appendAllChildren(instance, workInProgress, false, false);
 
-finalizeInitialChildren(instance, type, newProps, rootContainerInstance, currentHostContext)
+finalizeInitialChildren(
+  instance,
+  type,
+  newProps,
+  rootContainerInstance,
+  currentHostContext
+);
 ```
+
 我们重点来看看：`finalizeInitialChildren`
+
 ```js
-function finalizeInitialChildren(domElement, type, props, rootContainerInstance, hostContext) {
+function finalizeInitialChildren(
+  domElement,
+  type,
+  props,
+  rootContainerInstance,
+  hostContext
+) {
   setInitialProperties(domElement, type, props, rootContainerInstance);
   return shouldAutoFocusHostComponent(type, props);
 }
@@ -333,11 +380,19 @@ function finalizeInitialChildren(domElement, type, props, rootContainerInstance,
 // 具体内容就不写了，无非跟大家想的一样，for in 添加对应属性
 // React也一样  就是多了一些边界情况的思考而已
 // 不过要看的是它在执行的过程中跑了一行ensureListeningTo(rootContainerElement, propKey);
-setInitialDOMProperties(tag, domElement, rootContainerElement, props, isCustomComponentTag);
+setInitialDOMProperties(
+  tag,
+  domElement,
+  rootContainerElement,
+  props,
+  isCustomComponentTag
+);
 ```
 
 ## listenTo
-在`setInitialDOMProperties`中把`props`映射到`DOM`上。但是对应的事件可没有直接映射到`DOM`上。我们都知道`React`将所有的事件都委托到了`document`上，而干这件事的地方就在这里（老天爷，我终于找见了，真难弄😿）。
+
+在`setInitialDOMProperties`中把`props`映射到`DOM`上。但是对应的事件可没有直接映射到`DOM`上。我们都知道`React`将所有的事件都委托到了`document`上，而干这件事的地方就在这里（老天爷，我终于找见了，真难弄 😿）。
+
 ```js
 // ensureListeningTo中listenTo(registrationName, doc);
 // registrationName是事件名称onClick等
@@ -398,7 +453,7 @@ function trapBubbledEvent(click, document) {
   if (!document) {
     return null;
   }
-  const dispatch = dispatchInteractiveEvent
+  const dispatch = dispatchInteractiveEvent;
   addEventBubbleListener(
     document,
     getRawEventName(click), // 这东西好像有的事件名称需要改一下还是咋的，一般就是对应的事件名称
@@ -414,10 +469,13 @@ function dispatchInteractiveEvent(click, nativeEvent) {
   // dispatchEvent(click, nativeEvent);
 }
 ```
+
 至此，`DOM`的创建就完成了，有了`DOM`、`DOM`有了对应的`props`。事件也委托到了`document`上。那我们现在先不急着回溯，看看看触发事件的时候`React`会怎么做。
 
-# React事件原理
+# React 事件原理
+
 细心的童鞋已经发现了，`dispatchInteractiveEvent`的`dispatchEvent`并不是参数传进来的。它是一个函数：
+
 ```js
 function dispatchEvent(topLevelType, nativeEvent) {
   // topLevelType 就是事件名称
@@ -425,14 +483,22 @@ function dispatchEvent(topLevelType, nativeEvent) {
   // 上面的判断跟取target就不说了
   // 这里是根据target来取出对应元素的fiber
   var targetInst = getClosestInstanceFromNode(nativeEventTarget);
-  if (targetInst !== null && typeof targetInst.tag === 'number' && !isFiberMounted(targetInst)) {
+  if (
+    targetInst !== null &&
+    typeof targetInst.tag === 'number' &&
+    !isFiberMounted(targetInst)
+  ) {
     targetInst = null;
-}
+  }
 
-  var bookKeeping = getTopLevelCallbackBookKeeping(topLevelType, nativeEvent, targetInst);
+  var bookKeeping = getTopLevelCallbackBookKeeping(
+    topLevelType,
+    nativeEvent,
+    targetInst
+  );
 
   try {
-    handleTopLevel(bookKeeping)
+    handleTopLevel(bookKeeping);
   } finally {
     releaseTopLevelCallbackBookKeeping(bookKeeping);
   }
@@ -440,6 +506,7 @@ function dispatchEvent(topLevelType, nativeEvent) {
 ```
 
 我们来看看`React`是怎么通过一个`DOM`得到其对应的`fiberNode`的：
+
 ```js
 function getClosestInstanceFromNode(node) {
   if (node[internalInstanceKey]) {
@@ -465,22 +532,26 @@ function getClosestInstanceFromNode(node) {
   return null;
 }
 ```
+
 好了，非常简单，`React`通过给原生`DOM`打内部`tag`，取到其对应的`fiber`。而如果当前`target`没有内部`tag`，那么会一直向上查找，最终得到离`target`最近的有`fiber`的父元素。目前我遇到的`HTML`，无论是否添加`props`、事件，都会有对应的`fiber`。
+
 > `React`把`fiber`直接存储到了对应的`DOM`上，然后通过`React`制定的`tag`取出。
 
 ok，有了`fiber`，`fiber`的`memorizedProps`上又存储了元素所有的属性，当然也包括各种事件了。不用看我们都知道该咋弄了。
 
 得到`fiber`之后，又调了个函数，这个函数返回了一个对象，它把对应的`fiber`、事件类型、跟`DOM`都存好`return`出来：
+
 ```js
-  return {
-    topLevelType: topLevelType,
-    nativeEvent: nativeEvent,
-    targetInst: targetInst,
-    ancestors: []
-  };
+return {
+  topLevelType: topLevelType,
+  nativeEvent: nativeEvent,
+  targetInst: targetInst,
+  ancestors: [],
+};
 ```
 
 ## 更新阶段
+
 ```js
 function batchedUpdates(fn, bookkeeping) {
   if (isBatching) {
@@ -518,11 +589,11 @@ function handleTopLevel(bookKeeping) {
   // event handlers, because event handlers can modify the DOM, leading to
   // inconsistencies with ReactMount's node cache. See #1105.
   var ancestor = targetInst;
-  /** 
+  /**
    *  do把target对应的fiber push到队列
    *  然后得到root container, 一般就是我们的App组件fiber
    *  也就是得到包含当前元素的组件对应的fiber
-  */
+   */
   do {
     var root = findRootContainerNode(ancestor);
     bookKeeping.ancestors.push(ancestor);
@@ -530,13 +601,28 @@ function handleTopLevel(bookKeeping) {
   } while (ancestor);
   for (var i = 0; i < bookKeeping.ancestors.length; i++) {
     targetInst = bookKeeping.ancestors[i];
-    runExtractedEventsInBatch(bookKeeping.topLevelType, targetInst, bookKeeping.nativeEvent, getEventTarget(bookKeeping.nativeEvent));
+    runExtractedEventsInBatch(
+      bookKeeping.topLevelType,
+      targetInst,
+      bookKeeping.nativeEvent,
+      getEventTarget(bookKeeping.nativeEvent)
+    );
   }
 }
 
-function runExtractedEventsInBatch(topLevelType, targetInst, nativeEvent, nativeEventTarget) {
+function runExtractedEventsInBatch(
+  topLevelType,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget
+) {
   // 一个class   应该是当前事件对应的event类
-  var events = extractEvents(topLevelType, targetInst, nativeEvent, nativeEventTarget);
+  var events = extractEvents(
+    topLevelType,
+    targetInst,
+    nativeEvent,
+    nativeEventTarget
+  );
   runEventsInBatch(events);
 }
 
@@ -556,8 +642,8 @@ function runEventsInBatch(events) {
   rethrowCaughtError();
 }
 var executeDispatchesAndRelease = function (event) {
-    executeDispatchesInOrder(event);
-    event.constructor.release(event);
+  executeDispatchesInOrder(event);
+  event.constructor.release(event);
 };
 // 执行逻辑
 function executeDispatchesInOrder(event) {
@@ -580,12 +666,15 @@ function executeDispatchesInOrder(event) {
   event._dispatchInstances = null;
 }
 ```
-👌至此 ，整个事件调度的过程就完成了。
 
-## 继续我们的render
+👌 至此 ，整个事件调度的过程就完成了。
+
+## 继续我们的 render
+
 刚刚既然看到了`React`的事件委托，就多说了两句。回归`ReactDOM`这里。我们执行到`listenTo`.给`DOM`设置了`props、document`上委托了事件，完了以后又干了一堆初始化工作(看不懂 瞎猜的)。
 
 我打了多个断点，来确定到底什么时候`mount`到页面中，最终回到了`performWorkOnRoot`这个函数。其中执行了`completeRoot`，这个函数完成了对`DOM`的挂载。哦不，最终还是他妈的到 `commitPlacement` 这里便是最终的`mount`之处 欧耶。
+
 ```js
 function commitPlacement(finishedWork) {
   if (!supportsMutation) {
@@ -613,7 +702,10 @@ function commitPlacement(finishedWork) {
       isContainer = true;
       break;
     default:
-      invariant(false, 'Invalid host parent fiber. This error is likely caused by a bug in React. Please file an issue.');
+      invariant(
+        false,
+        'Invalid host parent fiber. This error is likely caused by a bug in React. Please file an issue.'
+      );
   }
   if (parentFiber.effectTag & ContentReset) {
     // Reset the text content of the parent before doing any insertions
@@ -669,23 +761,26 @@ function commitPlacement(finishedWork) {
 谢天谢地，老子终于到挂载`DOM`了。
 
 # 总结
+
 我们把大概的流程过一遍：
+
 1. `jsx`由`babel`转译为`React.createElement`，完成之后进入`ReactDOM.render()`方法内（注意，进来之后所有的元素就`over`了）
 2. 创建`fiberRoot`和`rootFiber`: 前者是调度过程中存储各种信息的对象，后者是我们的跟组件对应的`fiber`。也是整个`fiber`树的根。
 3. 初始化: 把各种信息保存到`fiber`当中，什么`props、state`都会存储到`fiber`的对应属性内。
-4. 创建真正的DOM: 并且把子结点都`append`到父节点当中
-5. 初始化DOM：将存储在`fiber`中的信息，都射影到真正的`DOM`中。修改其对应属性。这个过程中还包括对应的事件。不过这些事件都会直接`addEventListener`到`document`中
+4. 创建真正的 DOM: 并且把子结点都`append`到父节点当中
+5. 初始化 DOM：将存储在`fiber`中的信息，都射影到真正的`DOM`中。修改其对应属性。这个过程中还包括对应的事件。不过这些事件都会直接`addEventListener`到`document`中
 6. 再执行了一些我看不懂的操作，，，
 7. 最终进入挂载阶段。把我们的根组件`append`到`container`之中
 
 至此，整个挂载过程已经完毕。
 
 ## 彩蛋
+
 阅读过程中又对`React`的事件有了进一步的理解：
 
-触发的时候，事件类型已经`bind`到对应的`cb`之中了。等到具体事件被触发时，`React`会用`event.target`获取到对应的 `fiber` （是给`DOM`打`tag`，把对应的`fiber`直接绑到`DOM`来实现的）。这个过程中还会遍历取得target的祖先结点，一路判断其是否注册同类型事件回调，保存至queue中。
+触发的时候，事件类型已经`bind`到对应的`cb`之中了。等到具体事件被触发时，`React`会用`event.target`获取到对应的 `fiber` （是给`DOM`打`tag`，把对应的`fiber`直接绑到`DOM`来实现的）。这个过程中还会遍历取得 target 的祖先结点，一路判断其是否注册同类型事件回调，保存至 queue 中。
 
-根据`fiber`上存储的信息（`props`中就有对应的回调，其实props也被绑到了DOM上  所以具体是应该是取的props 不过都一样啦）和事件类型，选择对应的`event class`，再从`fiber`上取到信息存储到`React event`对象之中(`_dispatchInstances`, `_dispatchListeners`)。
+根据`fiber`上存储的信息（`props`中就有对应的回调，其实 props 也被绑到了 DOM 上 所以具体是应该是取的 props 不过都一样啦）和事件类型，选择对应的`event class`，再从`fiber`上取到信息存储到`React event`对象之中(`_dispatchInstances`, `_dispatchListeners`)。
 
 最后将所有的`listener`都按照入队的顺序执行（也就是冒泡顺序）即可实现事件委托。
 

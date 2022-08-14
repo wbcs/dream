@@ -1,13 +1,17 @@
 # kafka 运行环境
+
 ```sh
 ➜ brew install kafka
 ```
+
 如果报错说需要 java 环境，那就：
+
 ```sh
 ➜ brew cask install homebrew/cask-versions/adoptopenjdk8
 ```
 
 然后启动 kafka:
+
 ```sh
 # 我的版本是 2.5.0
 ➜ cd /usr/local/Cellar/kafka/:version
@@ -18,6 +22,7 @@
 ```
 
 创建 topic：
+
 ```sh
 # 这里名字是 wb-topic
 # kafka 默认端口是 2181
@@ -28,11 +33,13 @@ wb-topic
 ```
 
 # python kafka
+
 ```sh
 ➜ pip2 install kafka
 ```
 
 Producer:
+
 ```py
 from kafka import KafkaProducer
 import time
@@ -52,7 +59,9 @@ if __name__ == '__main__':
     start()
     producer.close()
 ```
+
 Consumer:
+
 ```py
 from kafka import KafkaConsumer
 

@@ -1,7 +1,9 @@
 # 映射类型 as 子句
 
 ```ts
-type Getter<T> = { [K in keyof T & string as `get${Capitalize<K>}`]: () => T[K] };
+type Getter<T> = {
+  [K in keyof T & string as `get${Capitalize<K>}`]: () => T[K];
+};
 
 // type Mapped = {
 //   getName: () => string;
@@ -10,10 +12,11 @@ type Getter<T> = { [K in keyof T & string as `get${Capitalize<K>}`]: () => T[K] 
 type Mapped = Getter<{ name: string; age: number }>;
 
 type MapUnionLiteral<T> = {
-  [
-    K in keyof T & string as `get${Capitalize<K>}` | `set${Capitalize<K>}` | `remove${Capitalize<K>}`
-  ]: T[K]
-}
+  [K in keyof T & string as
+    | `get${Capitalize<K>}`
+    | `set${Capitalize<K>}`
+    | `remove${Capitalize<K>}`]: T[K];
+};
 
 // {
 //   getName: string;
@@ -23,5 +26,5 @@ type MapUnionLiteral<T> = {
 //   setAge: number;
 //   removeAge: number;
 // }
-MapUnionLiteral<{ name: string; age: number }>
+MapUnionLiteral<{ name: string; age: number }>;
 ```

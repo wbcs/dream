@@ -1,14 +1,19 @@
-# 啥是three.js
-其实我老早之前就想自己写一款游戏了，但是如果要使用原生的WebGL或者canvas来做的话，目前我的水平还不够。而这个three.js就是可以忽略掉底层细节，直接关注逻辑来开发3D动画效果的JavaScript库。
+# 啥是 three.js
+
+其实我老早之前就想自己写一款游戏了，但是如果要使用原生的 WebGL 或者 canvas 来做的话，目前我的水平还不够。而这个 three.js 就是可以忽略掉底层细节，直接关注逻辑来开发 3D 动画效果的 JavaScript 库。
 
 # 最基本的三要素
-提到WebGL，最基本的三要素：
-+ scene: 场景，你所看到的一切都可以看做是保存在这个场景中的元素。
-+ camera: 摄像机，就是看scene的视角，不同的视角看同一场景，得到的效果也是不一样的。
-+ renderer: 渲染器，将看到的画面渲染到canvas之中。
 
-# 第一个demo
-这种东西说太多也没屌用，自己跟着实现一边就差不多懂了基本概念。这里就不写原生了，我们直接使用react和THREE相结合：
+提到 WebGL，最基本的三要素：
+
+- scene: 场景，你所看到的一切都可以看做是保存在这个场景中的元素。
+- camera: 摄像机，就是看 scene 的视角，不同的视角看同一场景，得到的效果也是不一样的。
+- renderer: 渲染器，将看到的画面渲染到 canvas 之中。
+
+# 第一个 demo
+
+这种东西说太多也没屌用，自己跟着实现一边就差不多懂了基本概念。这里就不写原生了，我们直接使用 react 和 THREE 相结合：
+
 ```jsx
 import React from 'react';
 import THREE from 'three.js';
@@ -19,22 +24,21 @@ class Scene extends React.Component {
     this.sceneRef = React.createRef();
   }
   componentDidMount() {
-    const {sceneRef, renderer} = this;
-    sceneRef.current.appendChild(renderer.domElement);  // 这看代码都能懂
+    const { sceneRef, renderer } = this;
+    sceneRef.current.appendChild(renderer.domElement); // 这看代码都能懂
   }
   render() {
-    const {sceneRef} = this;
+    const { sceneRef } = this;
     // 最终的结果肯定是要渲染到DOM中的，本例就渲染在scene这个div上吧。
-    return (
-      <div id="scene" ref={sceneRef} />
-    );
+    return <div id="scene" ref={sceneRef} />;
   }
 }
 
 export default Scene;
 ```
 
-刚刚提到最基本的三要素，要创建一个3D效果，肯定是先要创建以上三要素的：
+刚刚提到最基本的三要素，要创建一个 3D 效果，肯定是先要创建以上三要素的：
+
 ```jsx
 constructor() {
   super(props);
@@ -43,11 +47,12 @@ constructor() {
   this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
   this.renderer = new THREE.WebGLRenderer();
 
-  
+
 }
 ```
 
 好了，准备工作完成了，现在我们给这个空白场景里添加东东：
+
 ```jsx
 componentDidMount() {
   const {scene, camera, renderer, webgl} = this;

@@ -10,7 +10,7 @@ function Promise(cb) {
     if (this._resolveCallback) {
       setTimeout(() => {
         const ret = this._resolveCallback(val);
-        const {resolveCb, rejectCb} = this._resolveCallback;
+        const { resolveCb, rejectCb } = this._resolveCallback;
         if (ret instanceof Promise) {
           ret.then(resolveCb, rejectCb);
         } else {
@@ -28,7 +28,7 @@ function Promise(cb) {
     if (this._rejectCallback) {
       setTimeout(() => {
         const ret = this._rejectCallback(val);
-        const {resolveCb, rejectCb} = this._rejectCallback;
+        const { resolveCb, rejectCb } = this._rejectCallback;
         if (ret instanceof Promise) {
           ret.then(resolveCb, rejectCb);
         } else {
@@ -40,15 +40,15 @@ function Promise(cb) {
   cb(resolve, reject);
 }
 
-Promise.resolve = function(val) {
-  return new Promise(resolve => resolve(val));
+Promise.resolve = function (val) {
+  return new Promise((resolve) => resolve(val));
 };
 
-Promise.reject = function(val) {
+Promise.reject = function (val) {
   return new Promise((resolve, reject) => reject(val));
 };
 
-Promise.prototype.then = function(resolve, reject) {
+Promise.prototype.then = function (resolve, reject) {
   return new Promise((resolveCb, rejectCb) => {
     if (this.PromiseStatus === 'fullfilled') {
       setTimeout(() => {
@@ -80,7 +80,7 @@ Promise.prototype.then = function(resolve, reject) {
   });
 };
 
-Promise.prototype.catch = function(reject) {
+Promise.prototype.catch = function (reject) {
   if (this.PromiseStatus === 'rejected') {
     setTimeout(() => {
       reject(this.PromiseValue);
@@ -108,19 +108,23 @@ Promise.prototype.catch = function(reject) {
 // })
 
 Promise.resolve('resolve')
-  .then(res => {
+  .then((res) => {
     console.log(res);
     return 0;
-  }).then(res => {
-    console.log(res)
-    return 1;
-  }).then(res => {
-    console.log(res)
-  }).then(res => {
-    console.log(res)
-  }).then(res => {
-    console.log(res)
   })
+  .then((res) => {
+    console.log(res);
+    return 1;
+  })
+  .then((res) => {
+    console.log(res);
+  })
+  .then((res) => {
+    console.log(res);
+  })
+  .then((res) => {
+    console.log(res);
+  });
 ```
 
 还没写完，，有问题

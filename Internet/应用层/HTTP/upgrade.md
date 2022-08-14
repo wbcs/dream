@@ -1,15 +1,19 @@
-# HTTP升级
-http协议提供了一种机制，允许将一个已经建立的连接升级成新的、不相容的协议。通常升级请求方是client，不过也可以是server（由server发起升级到TLS），client可以选择是否要升级到新协议。
+# HTTP 升级
 
-> 借助这种机制，能够把HTTP1.1升级到HTTP2或者websocket。
+http 协议提供了一种机制，允许将一个已经建立的连接升级成新的、不相容的协议。通常升级请求方是 client，不过也可以是 server（由 server 发起升级到 TLS），client 可以选择是否要升级到新协议。
+
+> 借助这种机制，能够把 HTTP1.1 升级到 HTTP2 或者 websocket。
 
 # 升级的具体过程
-协议的升级请求总是client发起，暂时没有server请求协议更改的机制（那TLS不算吗）。client发送一个普通请求（get/post），不过这个普通请求需要两个额外的header：
+
+协议的升级请求总是 client 发起，暂时没有 server 请求协议更改的机制（那 TLS 不算吗）。client 发送一个普通请求（get/post），不过这个普通请求需要两个额外的 header：
+
 ```http
 Connection: Upgrade
 Upgrade: websocket
 ```
-Connection指明当前请求是一个升级请求。Updrade指定一个或多个协议名，按照优先级排序，以逗号分隔。
+
+Connection 指明当前请求是一个升级请求。Updrade 指定一个或多个协议名，按照优先级排序，以逗号分隔。
 
 服务器收到这个升级请求之后，决定是否升级此次链接。<br />
 如果升级则会返回一个 `101 Switching Protocols`，响应头会包含 `Upgrade: protocol-name`。<br />

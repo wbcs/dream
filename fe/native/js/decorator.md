@@ -1,18 +1,19 @@
 # 前言
-`JavaScript` 装饰器一共有3种：
-+ property Decorator
-+ Class Decorator
-+ Parameter Decorator
+
+`JavaScript` 装饰器一共有 3 种：
+
+- property Decorator
+- Class Decorator
+- Parameter Decorator
 
 # property Decorator
+
 ```ts
 class MyClass {
   // 会在MyClass被声明的时候调用，而不是new 或者实例调用方法的时候调用
-  @Decorator props = 'props'
+  @Decorator props = 'props';
   @Decorator
-  method() {
-
-  }
+  method() {}
 }
 
 function Decorator(prototypeOfClass: any, key: string, descriptor: Descriptor) {
@@ -20,13 +21,11 @@ function Decorator(prototypeOfClass: any, key: string, descriptor: Descriptor) {
 }
 ```
 
-
 # class Decorator
+
 ```ts
 @Decorator
-class MyClass {
-  
-}
+class MyClass {}
 
 function Decorator(targe) {
   // MyClass === target
@@ -34,11 +33,10 @@ function Decorator(targe) {
 ```
 
 # params Descorator
+
 ```ts
 class MyClass {
-  say(@Decorator arg) {
-
-  }
+  say(@Decorator arg) {}
 }
 
 function Decorator(target, methodKey, argNum) {
@@ -49,4 +47,5 @@ function Decorator(target, methodKey, argNum) {
 ```
 
 # 总结
+
 其实没啥说的，装饰器的本质就是修改 `descriptor` 。只不过这个修改的 `function` 是在 `class` 声明的时候执行的而已。
