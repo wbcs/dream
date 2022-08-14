@@ -47,3 +47,4 @@
   - [ ] yarn workspace, npm workspace
   - [ ] lerna
 - [ ] English
+- test
