@@ -110,7 +110,7 @@ function performSyncWorkOnRoot(root) {
 
 function beginWork() {
   performSyncWorkOnRoot(root);
-  CommitRoot()
+  CommitRoot();
 }
 
 beginWork;
