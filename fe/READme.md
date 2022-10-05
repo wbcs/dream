@@ -1,1 +1,1 @@
-- innerHTML 会自动对一些字符做转义，例如：&
+## javascript module

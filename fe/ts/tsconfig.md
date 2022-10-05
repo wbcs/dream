@@ -58,3 +58,13 @@ files 指明包含的 ts 文件
 没有 files、include 的时候会包含当前目录以及子目录下的所有 ts 文件，exclude 会被排除。
 
 > outdir 中的文件不会被包含，除非使用 files 手动添加。
+
+## reference
+
+tsconfig.json
+
+```json
+{
+  "reference": [{ "path": "../some-path" }]
+}
+```
