@@ -129,8 +129,8 @@ blob
 ➜ echo 'first' | git commit-tree $HASH_OF_FIRST_COMMIT | git cat-file -p
 tree $HASH
 parent $HASH
-author wangbing.cs <wangbing.cs@bytedance.com> 1594050079 +0800
-committer wangbing.cs <wangbing.cs@bytedance.com> 1594050079 +0800
+author wangbing.cs <421768544@qq.com> 1594050079 +0800
+committer wangbing.cs <421768544@qq.com> 1594050079 +0800
 
 first
 ```
@@ -150,7 +150,7 @@ first
 ```sh
 ➜ git log $LAST_TREE_OBJECT
 commit c7a4bbea50ac295c83ffeefcefc494668989c55a
-Author: wangbing.cs <wangbing.cs@bytedance.com>
+Author: wangbing.cs <421768544@qq.com>
 Date:   Mon Jul 6 23:41:19 2020 +0800
 
     first
@@ -163,21 +163,21 @@ Date:   Mon Jul 6 23:41:19 2020 +0800
 ➜ echo 'second commit test' | git commit-tree $LAST_TREE_OBJECT -p $FIRST_COMMIT_OBJECT | git cat-file -p
 tree fd2d108ec8acbce070c7ba491c6208e6c7893120
 parent c7a4bbea50ac295c83ffeefcefc494668989c55a
-author wangbing.cs <wangbing.cs@bytedance.com> 1594050989 +0800
-committer wangbing.cs <wangbing.cs@bytedance.com> 1594050989 +0800
+author wangbing.cs <421768544@qq.com> 1594050989 +0800
+committer wangbing.cs <421768544@qq.com> 1594050989 +0800
 
 second commit test
 
 # 查看最新的log
 ➜ git log $SECOND_COMMIT_OBJECT
 commit 9a3a7949c03191625fec0c987b51d3342a60ea2b
-Author: wangbing.cs <wangbing.cs@bytedance.com>
+Author: wangbing.cs <421768544@qq.com>
 Date:   Mon Jul 6 23:56:29 2020 +0800
 
     second commit test
 
 commit c7a4bbea50ac295c83ffeefcefc494668989c55a
-Author: wangbing.cs <wangbing.cs@bytedance.com>
+Author: wangbing.cs <421768544@qq.com>
 Date:   Mon Jul 6 23:41:19 2020 +0800
 
     first
